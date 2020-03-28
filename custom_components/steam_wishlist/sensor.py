@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
+from homeassistant import config_entries, core
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
@@ -14,9 +15,14 @@ SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    _LOGGER.info("%s: Setting up sensor: %s", DOMAIN, config_entry["url"])
-    entities: List[SteamWishlistEntity] = [SteamWishlistEntity(config_entry["url"])]
+async def async_setup_entry(
+    hass: core.HomeAssistant,
+    config_entry: config_entries.ConfigEntry,
+    async_add_entities,
+):
+    url: str = config_entry.data["url"]
+    _LOGGER.info("%s: Setting up sensor: %s", DOMAIN, url)
+    entities: List[SteamWishlistEntity] = [SteamWishlistEntity(url)]
     async_add_entities(entities, True)
 
 
