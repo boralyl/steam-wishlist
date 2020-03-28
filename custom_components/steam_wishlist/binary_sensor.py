@@ -132,6 +132,6 @@ class SteamGameEntity(Entity):
                     "percent_off": discount["discount_pct"],
                     "title": game["name"],
                 }
+                self._attrs = steam_game
 
             self._state = state
-            self._attrs = steam_game
