@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "url": "https://store.steampowered.com/wishlist/profiles/11111111111/wishlistdata"
+        },
+        "description": "Enter the URL used to retrieve your STEAM wishlist.",
+        "title": "STEAM Wishlist"
+      }
+    }
+  }
+}

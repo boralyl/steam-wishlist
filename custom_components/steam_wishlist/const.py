@@ -1,0 +1,1 @@
+DOMAIN = "steam_wishlist"

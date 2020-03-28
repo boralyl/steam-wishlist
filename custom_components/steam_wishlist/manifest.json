@@ -1,0 +1,9 @@
+{
+  "codeowners": ["@boralyl"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/boralyl/sensor.steam_wishlist",
+  "domain": "steam_wishlist",
+  "name": "Steam Wishlist Component",
+  "requirements": ["aiohttp==3.6.2"]
+}
