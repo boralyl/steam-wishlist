@@ -9,7 +9,6 @@ from homeassistant.helpers.entity import Entity
 from .const import DOMAIN
 
 
-DEFAULT_NAME = "Nintendo Wishlist Sensor"
 SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,25 +22,6 @@ async def async_setup_entry(
     _LOGGER.info("%s: Setting up sensor: %s", DOMAIN, url)
     entities: List[SteamWishlistEntity] = [SteamWishlistEntity(hass, url)]
     async_add_entities(entities, True)
-
-
-class Game:
-    def __init__(
-        self,
-        box_art_url: str,
-        normal_price: float,
-        title: str,
-        percent_off: float = 0,
-        sale_price: Optional[float] = None,
-    ):
-        self.box_art_url = box_art_url
-        self.normal_price = normal_price
-        self.title = title
-        self.percent_off = percent_off
-        self.sale_price = sale_price
-
-    def __str__(self) -> str:
-        return self.title
 
 
 class SteamWishlistEntity(Entity):
@@ -106,9 +86,10 @@ class SteamWishlistEntity(Entity):
                                 discount["price"] / (100 - discount["discount_pct"]), 2
                             ),
                             "sale_price": discount["price"] * 0.01,
+                            "steam_id": game_id,
                             "percent_off": discount["discount_pct"],
                             "title": game["name"],
                         }
                     )
             self._state = len(on_sale)
-            self._attrs["on_sale"] = [Game(**item) for item in on_sale]
+            self._attrs["on_sale"] = on_sale

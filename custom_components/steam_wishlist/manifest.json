@@ -5,5 +5,5 @@
   "documentation": "https://github.com/boralyl/sensor.steam_wishlist",
   "domain": "steam_wishlist",
   "name": "Steam Wishlist Component",
-  "requirements": ["aiohttp==3.6.2"]
+  "requirements": ["typing-extensions==3.7.4.1"]
 }
