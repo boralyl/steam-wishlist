@@ -2,9 +2,8 @@ import logging
 from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
-import aiohttp
-
 from homeassistant import config_entries, core
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
@@ -29,10 +28,10 @@ async def async_setup_entry(
 class SteamWishlistEntity(Entity):
     """Representation of a STEAM wishlist."""
 
-    def __init__(self, url: str):
+    def __init__(self, hass: core.HomeAssistant, url: str):
         super().__init__()
+        self.hass = hass
         self.url = url
-        self.session = aiohttp.ClientSession()
         self._state = 0
         self._attrs = {}
 
@@ -68,9 +67,10 @@ class SteamWishlistEntity(Entity):
     async def async_update(self) -> None:
         """Get the latest data and updates the state."""
         _LOGGER.info("%s: updating the state", DOMAIN)
-        async with self.session.get(self.url) as resp:
+        http_session = async_get_clientsession(self.hass)
+        async with http_session.get(self.url) as resp:
             data = await resp.json()
-            _LOGGER("%s: Fetched data: %s", DOMAIN, data)
+            _LOGGER.info("%s: Fetched data: %s", DOMAIN, data)
             on_sale: List[dict] = []
             for game_id, game in data.items():
                 discount: Optional[Dict[str, Any]] = None
