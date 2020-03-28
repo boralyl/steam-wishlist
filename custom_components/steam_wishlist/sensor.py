@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
+from homeassistant.helpers.entity import Entity
+
 from .const import DOMAIN
 
 
