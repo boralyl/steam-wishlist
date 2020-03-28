@@ -8,15 +8,17 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 DATA_CONFIGS = "steam_wishlist_config"
+SENSORS = ("binary_sensor", "sensor")
 
 
 async def async_setup_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
 ) -> bool:
     _LOGGER.info("async_setup_entry: setup url %s", entry.data["url"])
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
-    )
+    for sensor in SENSORS:
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, sensor)
+        )
     return True
 
 
