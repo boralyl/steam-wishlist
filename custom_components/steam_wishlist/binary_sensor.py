@@ -8,6 +8,7 @@ from homeassistant import config_entries, core
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.util import slugify
 
 from .const import DOMAIN
 
@@ -41,7 +42,8 @@ async def async_setup_entry(
                 discount: Dict[str, Any] = game["subs"][0]
             except IndexError:
                 _LOGGER.warning(
-                    "STEAM game unexpectedly had no pricing information: %s", game
+                    "STEAM game unexpectedly had no pricing information (this is likely a pre-release): %s",
+                    game,
                 )
                 continue
             normal_price: float = round(
@@ -77,7 +79,8 @@ class SteamGameEntity(Entity):
     @property
     def entity_id(self) -> str:
         """Return the entity id of the sensor."""
-        return f'binary_sensor.steam_wishlist_{self.game["title"]}'
+        slug = slugify(self.game["title"])
+        return f"binary_sensor.steam_wishlist_{slug}"
 
     @property
     def name(self) -> str:
