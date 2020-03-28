@@ -25,6 +25,25 @@ async def async_setup_entry(
     async_add_entities(entities, True)
 
 
+class Game:
+    def __init__(
+        self,
+        box_art_url: str,
+        normal_price: float,
+        title: str,
+        percent_off: float = 0,
+        sale_price: Optional[float] = None,
+    ):
+        self.box_art_url = box_art_url
+        self.normal_price = normal_price
+        self.title = title
+        self.percent_off = percent_off
+        self.sale_price = sale_price
+
+    def __str__(self) -> str:
+        return self.title
+
+
 class SteamWishlistEntity(Entity):
     """Representation of a STEAM wishlist."""
 
@@ -92,4 +111,4 @@ class SteamWishlistEntity(Entity):
                         }
                     )
             self._state = len(on_sale)
-            self._attrs["on_sale"] = on_sale
+            self._attrs["on_sale"] = [Game(**item) for item in on_sale]
