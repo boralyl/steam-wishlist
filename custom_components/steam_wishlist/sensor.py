@@ -21,7 +21,7 @@ async def async_setup_entry(
 ):
     url: str = config_entry.data["url"]
     _LOGGER.info("%s: Setting up sensor: %s", DOMAIN, url)
-    entities: List[SteamWishlistEntity] = [SteamWishlistEntity(url)]
+    entities: List[SteamWishlistEntity] = [SteamWishlistEntity(hass, url)]
     async_add_entities(entities, True)
 
 
