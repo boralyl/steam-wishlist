@@ -1,9 +1,7 @@
 import logging
-from datetime import timedelta
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from homeassistant import config_entries, core
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 
 from . import SteamWishlistDataUpdateCoordinator
@@ -12,7 +10,6 @@ from .util import get_steam_game
 from .types import SteamGame
 
 
-SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -86,34 +83,3 @@ class SteamWishlistEntity(Entity):
     async def async_will_remove_from_hass(self):
         """Disconnect from update signal."""
         self.coordinator.async_remove_listener(self.async_write_ha_state)
-
-    # async def async_update(self) -> None:
-    #    """Get the latest data and updates the state."""
-    #    _LOGGER.info("%s: updating the state", DOMAIN)
-    #    http_session = async_get_clientsession(self.hass)
-    #    async with http_session.get(self.url) as resp:
-    #        data = await resp.json()
-    #        _LOGGER.info("%s: Fetched data: %s", DOMAIN, data)
-    #        on_sale: List[dict] = []
-    #        for game_id, game in data.items():
-    #            discount: Optional[Dict[str, Any]] = None
-    #            # Check if there is any discount
-    #            for sub in game["subs"]:
-    #                if sub["discount_pct"] > 0:
-    #                    discount = sub
-    #                    break
-    #            if discount is not None:
-    #                on_sale.append(
-    #                    {
-    #                        "box_art_url": game["capsule"],
-    #                        "normal_price": round(
-    #                            discount["price"] / (100 - discount["discount_pct"]), 2
-    #                        ),
-    #                        "sale_price": discount["price"] * 0.01,
-    #                        "steam_id": game_id,
-    #                        "percent_off": discount["discount_pct"],
-    #                        "title": game["name"],
-    #                    }
-    #                )
-    #        self._state = len(on_sale)
-    #        self._attrs["on_sale"] = on_sale
