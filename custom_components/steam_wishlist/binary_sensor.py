@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 from typing_extensions import TypedDict
 
 from homeassistant import config_entries, core
+from homeassistant.components.binary_sensor import BinarySensorDevice
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import UpdateFailed
@@ -65,7 +66,7 @@ async def async_setup_entry(
     async_add_entities(entities, True)
 
 
-class SteamGameEntity(Entity):
+class SteamGameEntity(BinarySensorDevice):
     """Representation of a STEAM game."""
 
     def __init__(self, hass: core.HomeAssistant, url: str, game: SteamGame):
@@ -75,6 +76,11 @@ class SteamGameEntity(Entity):
         self.url = url
         self._state = True if game["sale_price"] is not None else False
         self._attrs = game
+
+    @property
+    def is_on(self):
+        """Return True if the binary sensor is on."""
+        return self._state
 
     @property
     def entity_id(self) -> str:
