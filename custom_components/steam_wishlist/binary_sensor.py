@@ -22,6 +22,10 @@ async def async_setup_entry(
     config_entry: config_entries.ConfigEntry,
     async_add_entities,
 ):
+    # coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    # entities = []
+    # for game_id, game in coordinator.data.items():
+
     url: str = config_entry.data["url"]
     _LOGGER.info("%s: Setting up binary sensors: %s", DOMAIN, url)
     entities: List[SteamGameEntity] = []

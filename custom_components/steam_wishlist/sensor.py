@@ -8,6 +8,7 @@ from homeassistant.helpers.entity import Entity
 
 from . import SteamWishlistDataUpdateCoordinator
 from .const import DOMAIN
+from .util import get_steam_game
 from .types import SteamGame
 
 
@@ -46,31 +47,7 @@ class SteamWishlistEntity(Entity):
         """Return all games on the STEAM wishlist."""
         games: List[SteamGame] = []
         for game_id, game in self.coordinator.data.items():
-            try:
-                discount: Dict[str, Any] = game["subs"][0]
-            except IndexError:
-                _LOGGER.warning(
-                    "STEAM game unexpectedly had no pricing information (this is likely a pre-release): %s",
-                    game,
-                )
-                continue
-            normal_price: float = round(
-                discount["price"] / (100 - discount["discount_pct"]), 2
-            )
-            sale_price: Optional[float] = None
-            if discount["discount_pct"]:
-                # Price is an integer so $6.00 is 600.
-                sale_price = discount["price"] * 0.01
-            games.append(
-                {
-                    "box_art_url": game["capsule"],
-                    "normal_price": normal_price,
-                    "percent_off": discount["discount_pct"],
-                    "sale_price": sale_price,
-                    "steam_id": game_id,
-                    "title": game["name"],
-                }
-            )
+            games.append(get_steam_game(game_id, game))
         return games
 
     @property
