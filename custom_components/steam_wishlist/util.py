@@ -8,7 +8,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def get_steam_game(game_id: int, game: Dict[str, Any]) -> SteamGame:
-    pricing: Optional[Dict[str, Any]
+    """Get a SteamGame from a game dict."""
+    pricing: Optional[Dict[str, Any] = None
     try:
         pricing: Dict[str, Any] = game["subs"][0]
         discount_pct = pricing["discount_pct"]
