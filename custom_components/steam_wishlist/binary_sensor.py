@@ -45,9 +45,9 @@ class SteamGameEntity(BinarySensorDevice):
     @property
     def is_on(self):
         """Return True if the binary sensor is on."""
-        pricing = self.coordinator.data[self.game.steam_id]
+        pricing = self.coordinator.data[self.game["steam_id"]]
         try:
-            pricing: dict = self.coordinator.data[self.game.steam_id]["subs"][0]
+            pricing: dict = self.coordinator.data[self.game["steam_id"]]["subs"][0]
             discount_pct = pricing["discount_pct"]
         except IndexError:
             discount_pct = 0
