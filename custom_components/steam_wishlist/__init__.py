@@ -76,7 +76,7 @@ async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
 class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: core.HomeAssistant, url: str):
         self.url = url
-        self.http_session = async_get_clientsession()
+        self.http_session = async_get_clientsession(hass)
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
