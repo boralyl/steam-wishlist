@@ -77,7 +77,7 @@ class SteamGameEntity(BinarySensorDevice):
     @property
     def state(self) -> bool:
         """Return the state of the sensor."""
-        return self.is_on()
+        return self.is_on
 
     @property
     def device_state_attributes(self):
