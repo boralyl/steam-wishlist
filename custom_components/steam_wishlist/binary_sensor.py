@@ -2,29 +2,19 @@ import logging
 from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
-from typing_extensions import TypedDict
 
 from homeassistant import config_entries, core
 from homeassistant.components.binary_sensor import BinarySensorDevice
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import slugify
 
 from .const import DOMAIN
+from .types import SteamGame
 
 
 SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)
-
-
-class SteamGame(TypedDict):
-    box_art_url: str
-    normal_price: float
-    percent_off: float
-    sale_price: Optional[float]
-    steam_id: int
-    title: str
 
 
 async def async_setup_entry(
