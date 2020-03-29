@@ -77,10 +77,16 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: core.HomeAssistant, url: str):
         self.url = url
         self.http_session = async_get_clientsession(hass)
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=DOMAIN,
+            update_method=self._async_fetch_data,
+            update_interval=SCAN_INTERVAL,
+        )
 
-    async def _async_update_data(self):
-        """Update the data for the coordinator."""
+    async def _async_fetch_data(self):
+        """Fetch the data for the coordinator."""
         async with self.http_session.get(self.url) as resp:
             data = await resp.json()
         return data
