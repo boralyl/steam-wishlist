@@ -3,6 +3,7 @@ import logging
 
 from homeassistant import config_entries, core
 from homeassistant.components.binary_sensor import BinarySensorDevice
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import slugify
 
 from . import SteamWishlistDataUpdateCoordinator
@@ -12,6 +13,12 @@ from .util import get_steam_game
 
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class GameRemovedException(HomeAssistantError):
+    """Exception raised when a game was removed from a wishlist."""
+
+    pass
 
 
 async def async_setup_entry(
@@ -45,6 +52,14 @@ class SteamGameEntity(BinarySensorDevice):
     @property
     def is_on(self):
         """Return True if the binary sensor is on."""
+        if self.game["steam_id"] not in self.coordinator.data:
+
+            async def _async_remove():
+                await self.async_remove()
+
+            self.hass.add_job(_async_remove)
+            return False
+
         pricing = self.coordinator.data[self.game["steam_id"]]
         try:
             pricing: dict = self.coordinator.data[self.game["steam_id"]]["subs"][0]
