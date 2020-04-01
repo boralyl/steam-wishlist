@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List
 from homeassistant import core
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, SCAN_INTERVAL
@@ -86,11 +87,25 @@ class SensorManager:
             self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
             new_binary_sensors.append(self.current_wishlist[game_id])
 
-        # Look in current for removed games
-        # self.hass.async_create_task(
-        #     # logic to unregister entities...
-        # )
         if new_sensors:
             self._component_add_entities["sensor"](new_sensors)
         if new_binary_sensors:
             self._component_add_entities["binary_sensor"](new_binary_sensors)
+
+        async def async_remove_games(current_wishlist, data, hass):
+            removed_entities = []
+            for game_id, entity in current_wishlist.items():
+                if game_id not in data:
+                    # Need to remove entity
+                    removed_entities.append(game_id)
+                    await entity.async_remove()
+                    ent_registry = await async_get_registry(hass)
+                    if entity.entity_id in ent_registry.entities:
+                        ent_registry.async_remove(entity.entity_id)
+            for game_id in removed_entities:
+                del current_wishlist[game_id]
+
+        # Look in current for removed games
+        self.hass.async_create_task(
+            async_remove_games(self.current_wishlist, self.coordinator.data, self.hass)
+        )
