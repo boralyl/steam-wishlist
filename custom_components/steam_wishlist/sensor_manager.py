@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Dict, List
+from typing import Any, Callable, Dict, List
 
 from homeassistant import core
 from homeassistant.core import callback
@@ -43,7 +43,8 @@ class SensorManager:
         self.coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
         self._component_add_entities = {}
         self.cleanup_jobs = []
-        self.current_wishlist: Dict[int, SteamGame] = {}
+        # Actually: Dict[int, Union[SteamWishlistEntity, SteamGameEntity]]
+        self.current_wishlist: Dict[int, Any] = {}
 
     async def async_register_component(
         self, platform: str, async_add_entities: Callable
@@ -72,7 +73,7 @@ class SensorManager:
         new_binary_sensors: List[SteamGameEntity] = []
         new_sensors: List[SteamWishlistEntity] = []
 
-        if not self.current.get(WISHLIST_SENSOR):
+        if not self.current_wishlist.get(WISHLIST_SENSOR):
             self.current_wishlist[WISHLIST_SENSOR] = SteamWishlistEntity(self)
             new_sensors.append(self.current_wishlist[WISHLIST_SENSOR])
         for game_id, game in self.coordinator.data.items():
