@@ -18,21 +18,18 @@ async def async_setup_entry(
     config_entry: config_entries.ConfigEntry,
     async_add_entities,
 ):
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    entities = [SteamWishlistEntity(hass, coordinator)]
-    _LOGGER.info("%s: Setting up sensor...", DOMAIN)
-    async_add_entities(entities, True)
+    await hass.data[DOMAIN][config_entry.entry_id].async_register_component(
+        "sensor", async_add_entities
+    )
 
 
 class SteamWishlistEntity(Entity):
     """Representation of a STEAM wishlist."""
 
-    def __init__(
-        self, hass: core.HomeAssistant, coordinator: SteamWishlistDataUpdateCoordinator
-    ):
+    def __init__(self, manager):
         super().__init__()
-        self.hass = hass
-        self.coordinator = coordinator
+        self.manager = manager
+        self.coordinator = manager.coordinator
         self._attrs = {}
 
     @property

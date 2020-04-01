@@ -26,28 +26,29 @@ async def async_setup_entry(
     config_entry: config_entries.ConfigEntry,
     async_add_entities,
 ):
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    entities = []
-    for game_id, game in coordinator.data.items():
-        steam_game: SteamGame = get_steam_game(game_id, game)
-        entities.append(SteamGameEntity(hass, coordinator, steam_game))
+    """Defer sensor setup to the shared sensor module."""
+    await hass.data[DOMAIN][config_entry.entry_id].async_register_component(
+        "binary_sensor", async_add_entities
+    )
+    # coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    # entities = []
+    # for game_id, game in coordinator.data.items():
+    #    steam_game: SteamGame = get_steam_game(game_id, game)
+    #    entities.append(SteamGameEntity(hass, coordinator, steam_game))
 
-    async_add_entities(entities, True)
+    # async_add_entities(entities, True)
 
 
 class SteamGameEntity(BinarySensorDevice):
     """Representation of a STEAM game."""
 
     def __init__(
-        self,
-        hass: core.HomeAssistant,
-        coordinator: SteamWishlistDataUpdateCoordinator,
-        game: SteamGame,
+        self, manager, game: SteamGame,
     ):
         super().__init__()
         self.game = game
-        self.hass = hass
-        self.coordinator = coordinator
+        self.manager = manager
+        self.coordinator = manager.coordinator
 
     @property
     def is_on(self):
@@ -57,7 +58,6 @@ class SteamGameEntity(BinarySensorDevice):
             async def _async_remove():
                 await self.async_remove()
 
-            self.hass.add_job(_async_remove)
             return False
 
         pricing = self.coordinator.data[self.game["steam_id"]]

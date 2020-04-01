@@ -2,13 +2,16 @@
 
 import asyncio
 import logging
+from typing import Callable
 
 from homeassistant import config_entries, core
+from homeassistant.core import callback
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, SCAN_INTERVAL
+from .sensor_manager import SensorManager
 
 _LOGGER = logging.getLogger(__name__)
 DATA_CONFIGS = "steam_wishlist_config"
@@ -20,14 +23,14 @@ async def async_setup_entry(
 ) -> bool:
     url = entry.data["url"]
     _LOGGER.info("async_setup_entry: setup url %s", url)
+    hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, url)
+    # coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
+    # await coordinator.async_refresh()
+    # if not coordinator.last_update_success:
+    #    raise ConfigEntryNotReady
 
-    coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
-    await coordinator.async_refresh()
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    # hass.data.setdefault(DOMAIN, {})
+    # hass.data[DOMAIN][entry.entry_id] = coordinator
 
     for component in PLATFORMS:
         hass.async_create_task(
@@ -71,22 +74,3 @@ async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
     )
 
     return True
-
-
-class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass: core.HomeAssistant, url: str):
-        self.url = url
-        self.http_session = async_get_clientsession(hass)
-        super().__init__(
-            hass,
-            _LOGGER,
-            name=DOMAIN,
-            update_method=self._async_fetch_data,
-            update_interval=SCAN_INTERVAL,
-        )
-
-    async def _async_fetch_data(self):
-        """Fetch the data for the coordinator."""
-        async with self.http_session.get(self.url) as resp:
-            data = await resp.json()
-        return data
