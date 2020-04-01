@@ -6,7 +6,6 @@ from homeassistant.components.binary_sensor import BinarySensorDevice
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import slugify
 
-from . import SteamWishlistDataUpdateCoordinator
 from .const import DOMAIN
 from .types import SteamGame
 from .util import get_steam_game

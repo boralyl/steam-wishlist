@@ -4,7 +4,6 @@ from typing import List
 from homeassistant import config_entries, core
 from homeassistant.helpers.entity import Entity
 
-from . import SteamWishlistDataUpdateCoordinator
 from .const import DOMAIN
 from .util import get_steam_game
 from .types import SteamGame

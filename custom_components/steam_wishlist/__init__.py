@@ -2,15 +2,10 @@
 
 import asyncio
 import logging
-from typing import Callable
 
 from homeassistant import config_entries, core
-from homeassistant.core import callback
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import DOMAIN, SCAN_INTERVAL
+from .const import DOMAIN
 from .sensor_manager import SensorManager
 
 _LOGGER = logging.getLogger(__name__)
