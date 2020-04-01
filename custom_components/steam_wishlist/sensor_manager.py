@@ -8,6 +8,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, SCAN_INTERVAL
 from .types import SteamGame
+from .util import get_steam_game
 
 _LOGGER = logging.getLogger(__name__)
 WISHLIST_SENSOR = -1
@@ -81,7 +82,7 @@ class SensorManager:
             if existing is not None:
                 continue
 
-            self.current_wishlist[game_id] = SteamGameEntity()
+            self.current_wishlist[game_id] = SteamGameEntity(self, get_steam_game(game))
             new_binary_sensors.append(self.current_wishlist[game_id])
 
         # Look in current for removed games
