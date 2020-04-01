@@ -92,14 +92,16 @@ class SensorManager:
         if new_binary_sensors:
             self._component_add_entities["binary_sensor"](new_binary_sensors)
 
-        async def async_remove_games(current_wishlist, data, hass):
+        async def async_remove_games(current_wishlist, coordinator):
             removed_entities = []
             for game_id, entity in current_wishlist.items():
-                if game_id not in data:
+                if game_id == WISHLIST_SENSOR:
+                    continue
+                if game_id not in coordinator.data:
                     # Need to remove entity
                     removed_entities.append(game_id)
                     await entity.async_remove()
-                    ent_registry = await async_get_registry(hass)
+                    ent_registry = await async_get_registry(coordinator.hass)
                     if entity.entity_id in ent_registry.entities:
                         ent_registry.async_remove(entity.entity_id)
             for game_id in removed_entities:
@@ -107,5 +109,5 @@ class SensorManager:
 
         # Look in current for removed games
         self.hass.async_create_task(
-            async_remove_games(self.current_wishlist, self.coordinator.data, self.hass)
+            async_remove_games(self.current_wishlist, self.coordinator)
         )
