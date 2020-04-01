@@ -18,6 +18,15 @@ SteamEntity = Union[SteamGameEntity, SteamWishlistEntity]
 
 
 class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
+    """Data update coordinator for all steam_wishlist entities.
+
+    This class handles updating for all entities created by this component.
+    Since all data required to update all sensors and binary_sensors comes
+    from a single api endpoint, this will handle fetching that data.  This way
+    each entity doesn't need to fetch the exact same data every time an update
+    is scheduled.
+    """
+
     def __init__(self, hass: core.HomeAssistant, url: str):
         self.url = url
         self.http_session = async_get_clientsession(hass)
@@ -36,7 +45,10 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
         return data
 
 
-async def async_remove_games(current_wishlist, coordinator):
+async def async_remove_games(
+    current_wishlist: Dict[int, SteamEntity],
+    coordinator: SteamWishlistDataUpdateCoordinator,
+):
     """Remove games no longer on the wish list.
 
     This will delete the entity and unregister it with homeassistant.
@@ -61,9 +73,9 @@ async def async_remove_games(current_wishlist, coordinator):
 
 
 class SensorManager:
-    """Class that handles registering and updating Hue sensor entities.
+    """Class that handles registering and updating sensor/binary_sensor entities.
 
-    Note: This is intended to be a singleton.
+    NOTE: This is intended to be a singleton.
     """
 
     def __init__(self, hass: core.HomeAssistant, url: str):
@@ -106,6 +118,7 @@ class SensorManager:
             if existing is not None:
                 continue
 
+            # Found a new game that we will need to create a new binary_sensor for.
             steam_game = get_steam_game(game_id, game)
             self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
             new_binary_sensors.append(self.current_wishlist[game_id])
@@ -115,7 +128,7 @@ class SensorManager:
         if new_binary_sensors:
             self._component_add_entities["binary_sensor"](new_binary_sensors)
 
-        # Look in current for removed games
+        # Handle removing any entities that removed from the steam wishlist.
         self.hass.async_create_task(
             async_remove_games(self.current_wishlist, self.coordinator)
         )

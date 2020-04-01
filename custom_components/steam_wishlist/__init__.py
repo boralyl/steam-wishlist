@@ -16,6 +16,7 @@ PLATFORMS = ("binary_sensor", "sensor")
 async def async_setup_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
 ) -> bool:
+    """Set up platforms from a ConfigEntry."""
     url = entry.data["url"]
     hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, url)
 
