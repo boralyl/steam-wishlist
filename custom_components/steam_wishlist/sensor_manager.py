@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, List
+from typing import Callable, Dict, List, Union
 
 from homeassistant import core
 from homeassistant.core import callback
@@ -8,11 +8,13 @@ from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, SCAN_INTERVAL
-from .types import SteamGame
+from .entities import SteamGameEntity, SteamWishlistEntity
 from .util import get_steam_game
 
 _LOGGER = logging.getLogger(__name__)
-WISHLIST_SENSOR = -1
+WISHLIST_ID = -1
+
+SteamEntity = Union[SteamGameEntity, SteamWishlistEntity]
 
 
 class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
@@ -34,6 +36,30 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
         return data
 
 
+async def async_remove_games(current_wishlist, coordinator):
+    """Remove games no longer on the wish list.
+
+    This will delete the entity and unregister it with homeassistant.
+    This method also mutates `current_wishlist`, removing games that should
+    be removed.
+    """
+    removed_entities = []
+    for game_id, entity in current_wishlist.items():
+        # Never remove the sensor.steam_wishlist
+        if game_id == WISHLIST_ID:
+            continue
+
+        if game_id not in coordinator.data:
+            # Need to remove entity
+            removed_entities.append(game_id)
+            await entity.async_remove()
+            ent_registry = await async_get_registry(coordinator.hass)
+            if entity.entity_id in ent_registry.entities:
+                ent_registry.async_remove(entity.entity_id)
+    for game_id in removed_entities:
+        del current_wishlist[game_id]
+
+
 class SensorManager:
     """Class that handles registering and updating Hue sensor entities.
 
@@ -45,39 +71,36 @@ class SensorManager:
         self.coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
         self._component_add_entities = {}
         self.cleanup_jobs = []
-        # Actually: Dict[int, Union[SteamWishlistEntity, SteamGameEntity]]
-        self.current_wishlist: Dict[int, Any] = {}
+        self.current_wishlist: Dict[int, SteamEntity] = {}
 
     async def async_register_component(
         self, platform: str, async_add_entities: Callable
     ):
+        """Register a platform for the component."""
         self._component_add_entities[platform] = async_add_entities
         if len(self._component_add_entities) < 2:
             # Haven't registered both `sensor` and `binary_sensor` platforms yet.
             return
 
-        # All platforms registered for the component.
-        # Add callback to update sensors.
+        # All platforms are now registered for the component.
+        # Add callback to update sensors when coordinator refreshes data.
         self.coordinator.async_add_listener(self.async_update_items)
         # Fetch initial data.
         await self.coordinator.async_refresh()
 
     @callback
     def async_update_items(self):
-        """Update sensors based on coordinator data."""
-        from .binary_sensor import SteamGameEntity
-        from .sensor import SteamWishlistEntity
-
+        """Add or remove sensors based on coordinator data."""
         if len(self._component_add_entities) < 2:
             # Haven't registered both `sensor` and `binary_sensor` platforms yet.
             return
 
-        new_binary_sensors: List[SteamGameEntity] = []
         new_sensors: List[SteamWishlistEntity] = []
+        if not self.current_wishlist.get(WISHLIST_ID):
+            self.current_wishlist[WISHLIST_ID] = SteamWishlistEntity(self)
+            new_sensors.append(self.current_wishlist[WISHLIST_ID])
 
-        if not self.current_wishlist.get(WISHLIST_SENSOR):
-            self.current_wishlist[WISHLIST_SENSOR] = SteamWishlistEntity(self)
-            new_sensors.append(self.current_wishlist[WISHLIST_SENSOR])
+        new_binary_sensors: List[SteamGameEntity] = []
         for game_id, game in self.coordinator.data.items():
             existing = self.current_wishlist.get(game_id)
             if existing is not None:
@@ -91,21 +114,6 @@ class SensorManager:
             self._component_add_entities["sensor"](new_sensors)
         if new_binary_sensors:
             self._component_add_entities["binary_sensor"](new_binary_sensors)
-
-        async def async_remove_games(current_wishlist, coordinator):
-            removed_entities = []
-            for game_id, entity in current_wishlist.items():
-                if game_id == WISHLIST_SENSOR:
-                    continue
-                if game_id not in coordinator.data:
-                    # Need to remove entity
-                    removed_entities.append(game_id)
-                    await entity.async_remove()
-                    ent_registry = await async_get_registry(coordinator.hass)
-                    if entity.entity_id in ent_registry.entities:
-                        ent_registry.async_remove(entity.entity_id)
-            for game_id in removed_entities:
-                del current_wishlist[game_id]
 
         # Look in current for removed games
         self.hass.async_create_task(

@@ -17,15 +17,7 @@ async def async_setup_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
 ) -> bool:
     url = entry.data["url"]
-    _LOGGER.info("async_setup_entry: setup url %s", url)
     hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, url)
-    # coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
-    # await coordinator.async_refresh()
-    # if not coordinator.last_update_success:
-    #    raise ConfigEntryNotReady
-
-    # hass.data.setdefault(DOMAIN, {})
-    # hass.data[DOMAIN][entry.entry_id] = coordinator
 
     for component in PLATFORMS:
         hass.async_create_task(
