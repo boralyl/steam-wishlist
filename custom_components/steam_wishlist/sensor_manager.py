@@ -82,7 +82,8 @@ class SensorManager:
             if existing is not None:
                 continue
 
-            self.current_wishlist[game_id] = SteamGameEntity(self, get_steam_game(game))
+            steam_game = get_steam_game(game_id, game)
+            self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
             new_binary_sensors.append(self.current_wishlist[game_id])
 
         # Look in current for removed games
