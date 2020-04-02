@@ -10,7 +10,24 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 WISHLIST_URL = "https://store.steampowered.com/wishlist/id/{username}/"
-URI = "https://store.steampowered.com/wishlist/profiles/{user_id}/wishlistdata/"
+WISHLIST_JSON_URL = (
+    "https://store.steampowered.com/wishlist/profiles/{user_id}/wishlistdata/"
+)
+
+
+async def async_get_user_url(steam_account_name: str):
+    session = aiohttp.ClientSession()
+    url = WISHLIST_URL.format(username=steam_account_name)
+    async with aiohttp.ClientSession() as session:
+        async with (session.get(url)) as resp:
+            html = await resp.text()
+            matches = re.findall("wishlist\\\/profiles\\\/([0-9]+)", html)
+            if not matches:
+                _LOGGER.error("Did not find user id.")
+                raise ValueError
+            user_id = matches[0]
+            _LOGGER.warning("Found user: %s", user_id)
+            return WISHLIST_JSON_URL.format(user_id=user_id)
 
 
 class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -20,21 +37,12 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user interface."""
         errors = {}
         if user_input is not None:
-            # validate input...
-            session = aiohttp.ClientSession()
-            url = WISHLIST_URL.format(username=user_input["steam_account_name"])
-            async with aiohttp.ClientSession() as session:
-                async with (session.get(url)) as resp:
-                    html = await resp.text()
-                    matches = re.findall("wishlist\\\/profiles\\\/([0-9]+)", html)
-                    if not matches:
-                        errors["base"] = "invalid_user"
-                        # do something
-                        _LOGGER.error("Did not find user id.")
-                    else:
-                        user_id = matches[0]
-                        _LOGGER.warning("Found user: %s", user_id)
-                        user_url = URI.format(user_id=user_id)
+            # Valdate the account name is valid.
+            try:
+                user_url = await async_get_user_url(user_input["steam_account_name"])
+            except ValueError:
+                errors["base"] = "invalid_user"
+
             if not errors:
                 return self.async_create_entry(
                     title="STEAM Wishlist", data={"url": user_url}
