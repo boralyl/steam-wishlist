@@ -9,7 +9,7 @@ from .types import SteamGame
 
 
 class SteamWishlistEntity(Entity):
-    """Representation of a STEAM wishlist."""
+    """Representation of a Steam wishlist."""
 
     def __init__(self, manager):
         super().__init__()
@@ -23,7 +23,7 @@ class SteamWishlistEntity(Entity):
 
     @property
     def games(self) -> List[SteamGame]:
-        """Return all games on the STEAM wishlist."""
+        """Return all games on the Steam wishlist."""
         games: List[SteamGame] = []
         for game_id, game in self.coordinator.data.items():
             games.append(get_steam_game(game_id, game))
@@ -37,7 +37,7 @@ class SteamWishlistEntity(Entity):
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return "STEAM Wishlist"
+        return "Steam Wishlist"
 
     @property
     def unit_of_measurement(self) -> str:
@@ -68,7 +68,7 @@ class SteamWishlistEntity(Entity):
 
 
 class SteamGameEntity(BinarySensorDevice):
-    """Representation of a STEAM game."""
+    """Representation of a Steam game."""
 
     def __init__(
         self, manager, game: SteamGame,

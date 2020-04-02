@@ -8,7 +8,7 @@ how it functions.
 ### `__init__.py`
 
 This file contains methods for initial setup of the component.  It handles
-managing config entries created through the UI when adding a new STEAM Wishlist
+managing config entries created through the UI when adding a new Steam Wishlist
 integration.
 
 ### `binary_sensor.py`

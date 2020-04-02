@@ -16,6 +16,10 @@ WISHLIST_JSON_URL = (
 
 
 async def async_get_user_url(steam_account_name: str):
+    """Get URL for a user's wishlist.
+
+    :raises ValueError: If the steam account name appears to be invalid.
+    """
     session = aiohttp.ClientSession()
     url = WISHLIST_URL.format(username=steam_account_name)
     async with aiohttp.ClientSession() as session:
@@ -31,7 +35,7 @@ async def async_get_user_url(steam_account_name: str):
 
 
 class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """STEAM wishlist config flow."""
+    """Steam wishlist config flow."""
 
     async def async_step_user(self, user_input):
         """Handle a flow initialized by the user interface."""
@@ -45,7 +49,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             if not errors:
                 return self.async_create_entry(
-                    title="STEAM Wishlist", data={"url": user_url}
+                    title="Steam Wishlist", data={"url": user_url}
                 )
 
         return self.async_show_form(

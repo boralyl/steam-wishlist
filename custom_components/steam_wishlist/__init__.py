@@ -1,4 +1,4 @@
-"""The STEAM Wishlist integration."""
+"""The Steam Wishlist integration."""
 
 import asyncio
 import logging
@@ -47,7 +47,7 @@ async def async_unload_entry(
 
 
 async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
-    """Set up the STEAM wishlist component."""
+    """Set up the Steam wishlist component."""
     hass.data.setdefault(DOMAIN, {})
     conf = config.get(DOMAIN)
     if conf is None:
