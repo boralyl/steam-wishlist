@@ -3,9 +3,9 @@
     "step": {
       "user": {
         "data": {
-          "url": "STEAM wishlist URL"
+          "steam_account_name": "Steam account name"
         },
-        "description": "Enter the URL used to retrieve your STEAM wishlist.",
+        "description": "Ente your Steam account name.",
         "title": "STEAM Wishlist"
       }
     },
