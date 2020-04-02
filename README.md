@@ -5,7 +5,10 @@
 # Steam Wishlist for Home Assistant
 
 A custom component that keeps track of when games on your Steam wishlist are on
-sale.
+sale.  This component uses the config flow and can easily be configured via the
+Integrations section in the UI.
+
+[![sensor.steam_wishlist](./assets/setup.png)](./assets/setup.png)
 
 ## HACS Installation
 
