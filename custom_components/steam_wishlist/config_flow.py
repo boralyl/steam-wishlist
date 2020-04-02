@@ -5,12 +5,12 @@ import re
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 WISHLIST_URL = "https://store.steampowered.com/wishlist/id/{username}/"
+URI = "https://store.steampowered.com/wishlist/profiles/{user_id}/wishlistdata/"
 
 
 class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -22,14 +22,23 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # validate input...
             session = aiohttp.ClientSession()
             url = WISHLIST_URL.format(username=user_input["steam_account_name"])
-            async with (session.get(url)) as resp:
-                html = await resp.text()
-                _LOGGER.warning("User input html was: %s")
-                _LOGGER.warning(
-                    "re findall: %s",
-                    re.findall("wishlist\\\/profiles\\\/([0-9]+)", html),
-                )
-            return self.async_create_entry(title="STEAM Wishlist", data=user_input,)
+            async with aiohttp.ClientSession() as session:
+                async with (session.get(url)) as resp:
+                    html = await resp.text()
+                    _LOGGER.warning(
+                        "re findall: %s",
+                        re.findall("wishlist\\\/profiles\\\/([0-9]+)", html),
+                    )
+                    matches = re.findall("wishlist\\\/profiles\\\/([0-9]+)", html)
+                    if not matches:
+                        # do something
+                        _LOGGER.error("Did not find user id.")
+                    user_id = matches[0]
+                    _LOGGER.warning("Found user: %s", user_id)
+                    user_url = URI.format(user_id=user_id)
+            return self.async_create_entry(
+                title="STEAM Wishlist", data={"url": user_url}
+            )
 
         return self.async_show_form(
             step_id="user",
