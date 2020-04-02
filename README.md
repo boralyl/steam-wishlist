@@ -13,7 +13,7 @@ Integrations section in the UI.
 ## HACS Installation
 
 1. Search for `Steam Wishlist` under the `Integrations` tab on [HACS](https://hacs.xyz/).
-2. Install the integration and restart home assistant.
+2. Install the integration.
 3. In the home assistant configuration screen click on `Integrations`.
 4. Click on the `+` icon to add a new integration.
 5. Search for `Steam Wishlist` and select it.
