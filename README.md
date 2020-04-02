@@ -40,6 +40,8 @@ This sensor will report the number of games on sale from your wishlist.
 
 #### Attributes
 
+The following state attributes are available for this sensor:
+
 |attribute|description|
 |-|-|
 |on_sale|An array of [games on sale](#attributes-1).|
@@ -53,6 +55,8 @@ indicate if it is on sale or not.
 [![sensor.steam_wishlist](./assets/binary_sensor.steam_wishlist_terraria.png)](./assets/binary_sensor.steam_wishlist_terraria.png)
 
 #### Attributes
+
+The following state attributes are available for this sensor:
 
 |attribute|description|
 |-|-|
