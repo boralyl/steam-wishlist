@@ -1,5 +1,8 @@
 {
   "config": {
+    "error": {
+      "invalid_user": "Could not find a steam account associated with the provided name."
+    },
     "step": {
       "user": {
         "data": {

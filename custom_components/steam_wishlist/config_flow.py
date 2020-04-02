@@ -18,6 +18,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input):
         """Handle a flow initialized by the user interface."""
+        errors = {}
         if user_input is not None:
             # validate input...
             session = aiohttp.ClientSession()
@@ -25,24 +26,24 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             async with aiohttp.ClientSession() as session:
                 async with (session.get(url)) as resp:
                     html = await resp.text()
-                    _LOGGER.warning(
-                        "re findall: %s",
-                        re.findall("wishlist\\\/profiles\\\/([0-9]+)", html),
-                    )
                     matches = re.findall("wishlist\\\/profiles\\\/([0-9]+)", html)
                     if not matches:
+                        errors["base"] = "invalid_user"
                         # do something
                         _LOGGER.error("Did not find user id.")
-                    user_id = matches[0]
-                    _LOGGER.warning("Found user: %s", user_id)
-                    user_url = URI.format(user_id=user_id)
-            return self.async_create_entry(
-                title="STEAM Wishlist", data={"url": user_url}
-            )
+                    else:
+                        user_id = matches[0]
+                        _LOGGER.warning("Found user: %s", user_id)
+                        user_url = URI.format(user_id=user_id)
+            if not errors:
+                return self.async_create_entry(
+                    title="STEAM Wishlist", data={"url": user_url}
+                )
 
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({vol.Required("steam_account_name"): str}),
+            errors=errors,
         )
 
     async def async_step_import(self, import_config):
