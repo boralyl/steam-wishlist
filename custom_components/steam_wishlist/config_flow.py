@@ -23,7 +23,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             session = aiohttp.ClientSession()
             url = WISHLIST_URL.format(username=user_input["steam_account_name"])
             async with (session.get(url)) as resp:
-                html = await resp.text
+                html = await resp.text()
                 _LOGGER.warning("User input html was: %s")
                 _LOGGER.warning(
                     "re findall: %s",
