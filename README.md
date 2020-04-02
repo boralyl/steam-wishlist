@@ -1,3 +1,7 @@
+[![](https://img.shields.io/github/release/boralyl/steam-wishlist/all.svg?style=for-the-badge)](https://github.com/boralyl/steam-wishlist/releases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![](https://img.shields.io/github/license/boralyl/steam-wishlist?style=for-the-badge)](LICENSE)
+
 # Steam Wishlist for Home Assistant
 
 A custom component that keeps track of when games on your Steam wishlist are on
@@ -35,7 +39,7 @@ This sensor will report the number of games on sale from your wishlist.
 
 |attribute|description|
 |-|-|
-|on_sale|An array of [games on sale](#attributes2).|
+|on_sale|An array of [games on sale](#attributes-1).|
 
 
 ### `binary_sensor.steam_wishlist_<title>`
