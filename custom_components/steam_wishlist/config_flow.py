@@ -1,3 +1,4 @@
+import aiohttp
 import logging
 import re
 
@@ -19,7 +20,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user interface."""
         if user_input is not None:
             # validate input...
-            session = async_get_clientsession()
+            session = aiohttp.ClientSession()
             url = WISHLIST_URL.format(user_input["steam_account_name"])
             async with (session.get(url)) as resp:
                 html = await resp.text
