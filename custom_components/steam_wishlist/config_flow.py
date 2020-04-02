@@ -21,7 +21,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             # validate input...
             session = aiohttp.ClientSession()
-            url = WISHLIST_URL.format(user_input["steam_account_name"])
+            url = WISHLIST_URL.format(username=user_input["steam_account_name"])
             async with (session.get(url)) as resp:
                 html = await resp.text
                 _LOGGER.warning("User input html was: %s")
