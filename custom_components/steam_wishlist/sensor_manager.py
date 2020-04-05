@@ -44,6 +44,31 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             data = await resp.json()
         return data
 
+    @callback
+    def async_add_listener(
+        self, update_callback: core.CALLBACK_TYPE
+    ) -> Callable[[], None]:
+        """Listen for data updates.
+
+        @NOTE: this is copied from an unreleased version of HA (v0.108.0).  After that
+        Release we may be able to use this (and set the minimum version in hasc.json to
+        0.108.0)
+        """
+        schedule_refresh = not self._listeners
+
+        self._listeners.append(update_callback)
+
+        # This is the first listener, set up interval.
+        if schedule_refresh:
+            self._schedule_refresh()
+
+        @callback
+        def remove_listener() -> None:
+            """Remove update listener."""
+            self.async_remove_listener(update_callback)
+
+        return remove_listener
+
 
 async def async_remove_games(
     current_wishlist: Dict[int, SteamEntity],
