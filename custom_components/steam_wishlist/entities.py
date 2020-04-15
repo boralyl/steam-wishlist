@@ -79,13 +79,6 @@ class SteamGameEntity(BinarySensorDevice):
     @property
     def is_on(self):
         """Return True if the binary sensor is on."""
-        if self.game["steam_id"] not in self.coordinator.data:
-
-            async def _async_remove():
-                await self.async_remove()
-
-            return False
-
         pricing = self.coordinator.data[self.game["steam_id"]]
         try:
             pricing: dict = self.coordinator.data[self.game["steam_id"]]["subs"][0]
