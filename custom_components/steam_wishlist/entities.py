@@ -33,11 +33,6 @@ class SteamWishlistEntity(Entity):
             games.append(get_steam_game(game_id, game))
         return games
 
-    # @property
-    # def entity_id(self) -> str:
-    #    """Return the entity id of the sensor."""
-    #    return "sensor.steam_wishlist"
-
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
@@ -83,7 +78,7 @@ class SteamGameEntity(BinarySensorDevice):
 
     @property
     def unique_id(self) -> str:
-        return f"steam_{self.slug}"
+        return f"steam_wishlist_{self.slug}"
 
     @property
     def is_on(self):
@@ -95,11 +90,6 @@ class SteamGameEntity(BinarySensorDevice):
         except IndexError:
             discount_pct = 0
         return discount_pct > 0
-
-    @property
-    def entity_id(self) -> str:
-        """Return the entity id of the sensor."""
-        return f"binary_sensor.steam_wishlist_{self.slug}"
 
     @property
     def name(self) -> str:
