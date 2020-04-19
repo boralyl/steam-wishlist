@@ -77,7 +77,7 @@ class SteamGameEntity(BinarySensorDevice):
         self.manager = manager
         self.coordinator = manager.coordinator
         self.slug = slugify(self.game["title"])
-        self.entity_id = self.unique_id
+        self.entity_id = f"binary_sensor.{self.unique_id}""
 
     @property
     def unique_id(self) -> str:
