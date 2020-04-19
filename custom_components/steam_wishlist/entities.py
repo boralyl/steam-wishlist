@@ -46,7 +46,7 @@ class SteamWishlistEntity(Entity):
     @property
     def icon(self) -> str:
         """Icon to use in the frontend."""
-        return "mdi:steam"
+        return "mdi:format-list-bulleted-square"
 
     @property
     def state(self) -> int:
@@ -67,6 +67,8 @@ class SteamWishlistEntity(Entity):
 class SteamGameEntity(BinarySensorDevice):
     """Representation of a Steam game."""
 
+    entity_id = None
+
     def __init__(
         self, manager, game: SteamGame,
     ):
@@ -75,6 +77,7 @@ class SteamGameEntity(BinarySensorDevice):
         self.manager = manager
         self.coordinator = manager.coordinator
         self.slug = slugify(self.game["title"])
+        self.entity_id = self.unique_id
 
     @property
     def unique_id(self) -> str:
