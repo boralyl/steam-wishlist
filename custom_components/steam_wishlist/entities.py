@@ -33,10 +33,10 @@ class SteamWishlistEntity(Entity):
             games.append(get_steam_game(game_id, game))
         return games
 
-    @property
-    def entity_id(self) -> str:
-        """Return the entity id of the sensor."""
-        return "sensor.steam_wishlist"
+    # @property
+    # def entity_id(self) -> str:
+    #    """Return the entity id of the sensor."""
+    #    return "sensor.steam_wishlist"
 
     @property
     def name(self) -> str:
