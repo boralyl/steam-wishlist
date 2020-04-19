@@ -20,6 +20,9 @@ async def async_setup_entry(
     url = entry.data["url"]
     hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, url)
 
+    if not entry.unique_id:
+        hass.config_entries.async_update_entry(entry, unique_id="steam_wishlist")
+
     for component in PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, component)
