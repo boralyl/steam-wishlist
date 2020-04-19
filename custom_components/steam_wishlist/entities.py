@@ -18,6 +18,10 @@ class SteamWishlistEntity(Entity):
         self._attrs = {}
 
     @property
+    def unique_id(self) -> str:
+        return "steam_wishlist"
+
+    @property
     def on_sale(self):
         return [game for game in self.games if game["sale_price"]]
 
@@ -75,6 +79,11 @@ class SteamGameEntity(BinarySensorDevice):
         self.game = game
         self.manager = manager
         self.coordinator = manager.coordinator
+        self.slug = slugify(self.game["title"])
+
+    @property
+    def unique_id(self) -> str:
+        return f"steam_{self.slug}"
 
     @property
     def is_on(self):
@@ -90,8 +99,7 @@ class SteamGameEntity(BinarySensorDevice):
     @property
     def entity_id(self) -> str:
         """Return the entity id of the sensor."""
-        slug = slugify(self.game["title"])
-        return f"binary_sensor.steam_wishlist_{slug}"
+        return f"binary_sensor.steam_wishlist_{self.slug}"
 
     @property
     def name(self) -> str:
