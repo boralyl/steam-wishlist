@@ -30,7 +30,6 @@ async def async_get_user_url(steam_account_name: str):
                 _LOGGER.error("Did not find user id.")
                 raise ValueError
             user_id = matches[0]
-            _LOGGER.warning("Found user: %s", user_id)
             return WISHLIST_JSON_URL.format(user_id=user_id)
 
 
