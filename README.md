@@ -8,7 +8,7 @@ A custom component that keeps track of when games on your Steam wishlist are on
 sale.  This component uses the config flow and can easily be configured via the
 Integrations section in the UI.
 
-[![sensor.steam_wishlist](./assets/setup.png)](./assets/setup.png)
+[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/master/assets/setup.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/setup.png)
 
 ## Pre-Installation
 
@@ -17,7 +17,7 @@ viewable. To do this, login to you steam account and edit your profile.  Under t
 `Privacy Settings` tab, set `Game Details` to `Public`.  Without this step, this integration
 will not be able to parse your wishlist.
 
-[![steam privacy settings](./assets/steam-profile.png)](./assets/steam-profile.png)
+[![steam privacy settings](https://github.com/boralyl/steam-wishlist/raw/master/assets/steam-profile.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/steam-profile.png)
 
 ## HACS Installation
 
@@ -45,7 +45,7 @@ After you successfully setup the integration a number of sensors will be created
 
 This sensor will report the number of games on sale from your wishlist.
 
-[![sensor.steam_wishlist](./assets/sensor.steam_wishlist.png)](./assets/sensor.steam_wishlist.png)
+[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/master/assets/sensor.steam_wishlist.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/sensor.steam_wishlist.png)
 
 #### Attributes
 
@@ -61,7 +61,7 @@ The following state attributes are available for this sensor:
 A binary sensor will be created for each game on your wishlist.  It's state will
 indicate if it is on sale or not.
 
-[![sensor.steam_wishlist](./assets/binary_sensor.steam_wishlist_terraria.png)](./assets/binary_sensor.steam_wishlist_terraria.png)
+[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/master/assets/binary_sensor.steam_wishlist_terraria.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/binary_sensor.steam_wishlist_terraria.png)
 
 #### Attributes
 
