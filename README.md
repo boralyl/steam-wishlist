@@ -4,8 +4,6 @@
 
 # Steam Wishlist for Home Assistant
 
-> **_NOTE_**: In order to use this integration
-
 A custom component that keeps track of when games on your Steam wishlist are on
 sale.  This component uses the config flow and can easily be configured via the
 Integrations section in the UI.
