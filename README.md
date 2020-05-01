@@ -4,11 +4,22 @@
 
 # Steam Wishlist for Home Assistant
 
+> **_NOTE_**: In order to use this integration
+
 A custom component that keeps track of when games on your Steam wishlist are on
 sale.  This component uses the config flow and can easily be configured via the
 Integrations section in the UI.
 
 [![sensor.steam_wishlist](./assets/setup.png)](./assets/setup.png)
+
+## Pre-Installation
+
+Prior to installing this integration you must first ensure that your wishlist is publicly
+viewable. To do this, login to you steam account and edit your profile.  Under the
+`Privacy Settings` tab, set `Game Details` to `Public`.  Without this step, this integration
+will not be able to parse your wishlist.
+
+[![steam privacy settings](./assets/steam-profile.png)](./assets/steam-profile.png)
 
 ## HACS Installation
 
