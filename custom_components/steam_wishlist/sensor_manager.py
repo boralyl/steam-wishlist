@@ -138,15 +138,17 @@ class SensorManager:
             new_sensors.append(self.current_wishlist[WISHLIST_ID])
 
         new_binary_sensors: List[SteamGameEntity] = []
-        for game_id, game in self.coordinator.data.items():
-            existing = self.current_wishlist.get(game_id)
-            if existing is not None:
-                continue
+        # {"success": 2} This indicates an empty wishlist.
+        if "success" not in self.coordinator.data:
+            for game_id, game in self.coordinator.data.items():
+                existing = self.current_wishlist.get(game_id)
+                if existing is not None:
+                    continue
 
-            # Found a new game that we will need to create a new binary_sensor for.
-            steam_game = get_steam_game(game_id, game)
-            self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
-            new_binary_sensors.append(self.current_wishlist[game_id])
+                # Found a new game that we will need to create a new binary_sensor for.
+                steam_game = get_steam_game(game_id, game)
+                self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
+                new_binary_sensors.append(self.current_wishlist[game_id])
 
         if new_sensors:
             self._component_add_entities["sensor"](new_sensors)

@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from homeassistant.components.binary_sensor import BinarySensorDevice
@@ -6,6 +7,9 @@ from homeassistant.util import slugify
 
 from .util import get_steam_game
 from .types import SteamGame
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class SteamWishlistEntity(Entity):
@@ -30,6 +34,9 @@ class SteamWishlistEntity(Entity):
         """Return all games on the Steam wishlist."""
         games: List[SteamGame] = []
         for game_id, game in self.coordinator.data.items():
+            # This indicates an empty wishlist, just return an empty list.
+            if game_id == "success":
+                break
             games.append(get_steam_game(game_id, game))
         return games
 
