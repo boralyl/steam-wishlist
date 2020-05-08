@@ -1,7 +1,10 @@
 {
-    "domains": ["binary_sensor", "sensor"],
-    "homeassistant": "0.106.0",
-    "iot_class": "Cloud Polling",
-    "name": "Steam Wishlist",
-    "render_readme": true
+  "codeowners": ["@boralyl"],
+  "config_flow": true,
+  "documentation": "https://github.com/boralyl/steam-wishlist",
+  "domains": ["binary_sensor", "sensor"],
+  "homeassistant": "0.106.0",
+  "iot_class": "Cloud Polling",
+  "name": "Steam Wishlist",
+  "render_readme": true
 }
