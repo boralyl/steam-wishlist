@@ -5,7 +5,7 @@ try:
     from homeassistant.components.binary_sensor import BinarySensorEntity
 except ImportError:
     # Prior to HA v0.110
-    from homeassistant.components.binary_sensor import BinarySensorDevice
+    from homeassistant.components.binary_sensor import BinarySensorDevice as BinarySensorEntity
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import slugify
 
@@ -75,7 +75,7 @@ class SteamWishlistEntity(Entity):
         )
 
 
-class SteamGameEntity(BinarySensorDevice):
+class SteamGameEntity(BinarySensorEntity):
     """Representation of a Steam game."""
 
     entity_id = None
