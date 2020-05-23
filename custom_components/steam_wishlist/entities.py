@@ -1,7 +1,11 @@
 import logging
 from typing import List
 
-from homeassistant.components.binary_sensor import BinarySensorDevice
+try:
+    from homeassistant.components.binary_sensor import BinarySensorEntity
+except ImportError:
+    # Prior to HA v0.110
+    from homeassistant.components.binary_sensor import BinarySensorDevice
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import slugify
 
