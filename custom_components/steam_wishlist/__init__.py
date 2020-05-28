@@ -50,18 +50,8 @@ async def async_unload_entry(
 
 
 async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
-    """Set up the Steam wishlist component."""
-    hass.data.setdefault(DOMAIN, {})
-    conf = config.get(DOMAIN)
-    if conf is None:
-        return True
+    """Set up the Steam wishlist component.
 
-    hass.data[DATA_CONFIGS] = conf
-
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data=conf
-        )
-    )
-
+    This component can only be configured through the Integrations UI.
+    """
     return True

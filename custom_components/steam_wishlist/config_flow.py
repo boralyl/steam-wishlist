@@ -84,10 +84,3 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors,
         )
-
-    async def async_step_import(self, import_config):
-        """Import a config entry from configuration.yaml."""
-        if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
-
-        return await self.async_step_user(import_config)
