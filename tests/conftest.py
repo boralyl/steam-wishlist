@@ -1,14 +1,15 @@
-
+"""pytest setup."""
+from aioresponses import aioresponses
 import pytest
 
-from aioresponses import aioresponses
 from homeassistant.exceptions import ServiceNotFound
+
+from .aiohttp_mock import mock_aiohttp_client
 
 from tests.common import (  # noqa: E402, isort:skip
     async_test_home_assistant,
     mock_storage as mock_storage,
 )
-from .aiohttp_mock import mock_aiohttp_client
 
 
 @pytest.fixture
@@ -50,5 +51,6 @@ def aioclient_mock():
 
 @pytest.fixture
 def mock_aioresponse():
+    """Fixture to mock aiohttp calls."""
     with aioresponses() as m:
         yield m

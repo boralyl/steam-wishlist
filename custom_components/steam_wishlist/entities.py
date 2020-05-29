@@ -1,16 +1,18 @@
 import logging
 from typing import List
 
+from homeassistant.helpers.entity import Entity
+from homeassistant.util import slugify
+
+from .types import SteamGame
+from .util import get_steam_game
+
 try:
     from homeassistant.components.binary_sensor import BinarySensorEntity
 except ImportError:
     # Prior to HA v0.110
     from homeassistant.components.binary_sensor import BinarySensorDevice as BinarySensorEntity
-from homeassistant.helpers.entity import Entity
-from homeassistant.util import slugify
 
-from .util import get_steam_game
-from .types import SteamGame
 
 
 _LOGGER = logging.getLogger(__name__)

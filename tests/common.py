@@ -15,6 +15,11 @@ import uuid
 
 from aiohttp.test_utils import unused_port as get_test_instance_port  # noqa
 
+# from homeassistant.components.device_automation import (  # noqa: F401
+# _async_get_device_automation_capabilities as async_get_device_automation_capabilities,
+# _async_get_device_automations as async_get_device_automations,
+# )
+# from homeassistant.components.mqtt.models import Message
 from homeassistant import auth, config_entries, core as ha, loader
 from homeassistant.auth import (
     auth_store,
@@ -23,12 +28,6 @@ from homeassistant.auth import (
     providers as auth_providers,
 )
 from homeassistant.auth.permissions import system_policies
-
-# from homeassistant.components.device_automation import (  # noqa: F401
-# _async_get_device_automation_capabilities as async_get_device_automation_capabilities,
-# _async_get_device_automations as async_get_device_automations,
-# )
-# from homeassistant.components.mqtt.models import Message
 from homeassistant.config import async_process_component_config
 from homeassistant.const import (
     ATTR_DISCOVERED,
@@ -53,13 +52,12 @@ from homeassistant.helpers import (
     storage,
 )
 from homeassistant.helpers.json import JSONEncoder
-from homeassistant.setup import async_setup_component, setup_component
 from homeassistant.util.async_ import run_callback_threadsafe
 import homeassistant.util.dt as date_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 import homeassistant.util.yaml.loader as yaml_loader
 
-from tests.async_mock import AsyncMock, MagicMock, Mock, patch
+from tests.async_mock import AsyncMock, Mock, patch
 
 _LOGGER = logging.getLogger(__name__)
 INSTANCES = []
@@ -269,18 +267,6 @@ def async_mock_intent(hass, intent_typ):
     intent.async_register(hass, MockIntentHandler())
 
     return intents
-
-
-@ha.callback
-def async_fire_mqtt_message(hass, topic, payload, qos=0, retain=False):
-    """Fire the MQTT message."""
-    if isinstance(payload, str):
-        payload = payload.encode("utf-8")
-    msg = Message(topic, payload, qos, retain)
-    hass.data["mqtt"]._mqtt_handle_message(msg)
-
-
-fire_mqtt_message = threadsafe_callback_factory(async_fire_mqtt_message)
 
 
 @ha.callback

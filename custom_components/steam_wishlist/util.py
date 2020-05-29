@@ -3,7 +3,6 @@ from typing import Any, Dict, Optional
 
 from .types import SteamGame
 
-
 _LOGGER = logging.getLogger(__name__)
 
 

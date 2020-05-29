@@ -1,16 +1,16 @@
+"""config_flow tests."""
 from unittest import mock
 
+from custom_components.steam_wishlist import config_flow
 import pytest
-from aioresponses import aioresponses
+
 from homeassistant import config_entries
 
-from custom_components.steam_wishlist import config_flow
-
-from .aiohttp_mock import AiohttpClientMocker
 from .async_mock import patch
 
 
 async def test_flow_init(hass):
+    """Test the initial flow."""
     result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "user"}
     )
@@ -28,6 +28,7 @@ async def test_flow_init(hass):
 
 
 async def test_flow_user_step_no_input(hass):
+    """Test appropriate error when no input is provided."""
     _result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "user"}
     )
@@ -38,6 +39,7 @@ async def test_flow_user_step_no_input(hass):
 
 
 async def test_flow_user_step_steam_account_name_invalid(hass):
+    """Test appropriate error when steam account name is invalid."""
     _result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "user"}
     )
@@ -50,6 +52,7 @@ async def test_flow_user_step_steam_account_name_invalid(hass):
 
 
 async def test_flow_user_step_steam_account_name_success(hass):
+    """Test flow success for a valid steam account name."""
     _result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "user"}
     )
@@ -64,7 +67,7 @@ async def test_flow_user_step_steam_account_name_success(hass):
         "flow_id": mock.ANY,
         "handler": "steam_wishlist",
         "title": "Steam Wishlist",
-        "data": {"url": config_flow.WISHLIST_JSON_URL.format(user_id="1234567890"),},
+        "data": {"url": config_flow.WISHLIST_JSON_URL.format(user_id="1234567890")},
         "description": None,
         "description_placeholders": None,
         "result": mock.ANY,
@@ -75,6 +78,7 @@ async def test_flow_user_step_steam_account_name_success(hass):
 
 
 async def test_flow_user_step_steam_profile_id_invalid(hass):
+    """Test appropriate error when steam profile id is invalid."""
     _result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "user"}
     )
@@ -89,6 +93,7 @@ async def test_flow_user_step_steam_profile_id_invalid(hass):
 
 
 async def test_flow_user_step_steam_profile_id_success(hass):
+    """Test flow success for a valid steam profile id."""
     _result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": "user"}
     )
@@ -116,6 +121,7 @@ async def test_flow_user_step_steam_profile_id_success(hass):
 
 
 async def test_async_check_profile_id_valid_is_valid(mock_aioresponse):
+    """Test return value when profile id is valid."""
     profile_id = "123"
     mock_aioresponse.get(config_flow.PROFILE_ID_URL.format(steam_profile_id=profile_id))
 
@@ -123,6 +129,7 @@ async def test_async_check_profile_id_valid_is_valid(mock_aioresponse):
 
 
 async def test_async_check_profile_id_valid_is_invalid(mock_aioresponse):
+    """Test return value when profile id is invalid."""
     profile_id = "123"
     mock_aioresponse.get(
         config_flow.PROFILE_ID_URL.format(steam_profile_id=profile_id), status=500
@@ -132,6 +139,7 @@ async def test_async_check_profile_id_valid_is_invalid(mock_aioresponse):
 
 
 async def test_async_get_user_url_invalid_raises_valueerror(mock_aioresponse):
+    """Test ValueError raised when username is invalid."""
     username = "bad"
     mock_aioresponse.get(
         config_flow.WISHLIST_URL.format(username=username), body="<html></html>"
@@ -141,15 +149,16 @@ async def test_async_get_user_url_invalid_raises_valueerror(mock_aioresponse):
 
 
 async def test_async_get_user_url_returns_json_url(mock_aioresponse):
+    """Test json url returned on success."""
     username = "bad"
-    body = """
+    body = r"""
     <html>
       <head>
       <script>
 	    var g_strWishlistBaseURL = "https:\/\/store.steampowered.com\/wishlist\/profiles\/1234567890\/";
       </script>
       </head>
-    </html>"""  # noqa: W605,E501
+    </html>"""  # noqa
     mock_aioresponse.get(config_flow.WISHLIST_URL.format(username=username), body=body)
     actual = await config_flow.async_get_user_url(username)
     expected = config_flow.WISHLIST_JSON_URL.format(user_id="1234567890")

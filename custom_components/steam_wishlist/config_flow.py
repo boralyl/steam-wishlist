@@ -1,7 +1,7 @@
-import aiohttp
 import logging
 import re
 
+import aiohttp
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -61,7 +61,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             ):
                 errors["base"] = "missing"
             if user_input.get("steam_account_name"):
-                # Valdate the account name is valid.
+                # Validate the account name is valid.
                 try:
                     user_url = await async_get_user_url(
                         user_input["steam_account_name"]
