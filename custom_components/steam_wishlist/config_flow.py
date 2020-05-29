@@ -9,6 +9,7 @@ from homeassistant import config_entries
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+PROFILE_ID_URL = "https://store.steampowered.com/wishlist/profiles/{steam_profile_id}/"
 WISHLIST_URL = "https://store.steampowered.com/wishlist/id/{username}/"
 WISHLIST_JSON_URL = (
     "https://store.steampowered.com/wishlist/profiles/{user_id}/wishlistdata/"
@@ -29,7 +30,7 @@ async def async_get_user_url(steam_account_name: str):
     async with aiohttp.ClientSession() as session:
         async with (session.get(url)) as resp:
             html = await resp.text()
-            matches = re.findall("wishlist\\\/profiles\\\/([0-9]+)", html)
+            matches = re.findall(r"wishlist\\\/profiles\\\/([0-9]+)", html)
             if not matches:
                 _LOGGER.error(
                     "Error setting up steam-wishlist component.  Did not find user id."
@@ -40,7 +41,7 @@ async def async_get_user_url(steam_account_name: str):
 
 
 async def async_check_profile_id_valid(steam_profile_id: str) -> bool:
-    url = f"https://store.steampowered.com/wishlist/profiles/{steam_profile_id}/"
+    url = PROFILE_ID_URL.format(steam_profile_id=steam_profile_id)
     async with aiohttp.ClientSession() as session:
         async with (session.get(url)) as resp:
             if resp.status > 200:

@@ -1,12 +1,14 @@
 
 import pytest
 
+from aioresponses import aioresponses
 from homeassistant.exceptions import ServiceNotFound
 
 from tests.common import (  # noqa: E402, isort:skip
     async_test_home_assistant,
     mock_storage as mock_storage,
 )
+from .aiohttp_mock import mock_aiohttp_client
 
 
 @pytest.fixture
@@ -37,3 +39,16 @@ def hass(loop, hass_storage, request):
         if isinstance(ex, ServiceNotFound):
             continue
         raise ex
+
+
+@pytest.fixture
+def aioclient_mock():
+    """Fixture to mock aioclient calls."""
+    with mock_aiohttp_client() as mock_session:
+        yield mock_session
+
+
+@pytest.fixture
+def mock_aioresponse():
+    with aioresponses() as m:
+        yield m

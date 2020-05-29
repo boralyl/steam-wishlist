@@ -54,4 +54,5 @@ async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
 
     This component can only be configured through the Integrations UI.
     """
+    hass.data.setdefault(DOMAIN, {})
     return True
