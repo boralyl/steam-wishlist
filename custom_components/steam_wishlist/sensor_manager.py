@@ -73,7 +73,7 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
 async def async_remove_games(
     current_wishlist: Dict[int, SteamEntity],
     coordinator: SteamWishlistDataUpdateCoordinator,
-):
+) -> None:
     """Remove games no longer on the wish list.
 
     This will delete the entity and unregister it with homeassistant.
@@ -93,6 +93,7 @@ async def async_remove_games(
             ent_registry = await async_get_registry(coordinator.hass)
             if entity.entity_id in ent_registry.entities:
                 ent_registry.async_remove(entity.entity_id)
+
     for game_id in removed_entities:
         del current_wishlist[game_id]
 
