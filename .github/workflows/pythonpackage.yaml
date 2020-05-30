@@ -25,7 +25,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements_test.txt
           pip install typing-extensions==3.7.4.1
-          pip install homeassistant
 
       - name: Run pytest
         run: |
