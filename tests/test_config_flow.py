@@ -3,10 +3,9 @@ from unittest import mock
 
 from custom_components.steam_wishlist import config_flow
 import pytest
+from pytest_homeassistant.async_mock import patch
 
 from homeassistant import config_entries
-
-from .async_mock import patch
 
 
 async def test_flow_init(hass):

@@ -9,8 +9,7 @@ from custom_components.steam_wishlist.entities import (
 from custom_components.steam_wishlist.sensor_manager import SteamEntity
 from custom_components.steam_wishlist.types import SteamGame
 from custom_components.steam_wishlist.util import get_steam_game
-
-from .async_mock import AsyncMock, call
+from pytest_homeassistant.async_mock import AsyncMock, call
 
 
 async def test_async_remove_games(manager_mock):
