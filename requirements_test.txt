@@ -6,4 +6,5 @@ aioresponses==0.6.3
 codecov==2.1.0
 coverage==5.1
 mypy==0.770
+pytest-cov==2.8.1
 pytest-homeassistant
