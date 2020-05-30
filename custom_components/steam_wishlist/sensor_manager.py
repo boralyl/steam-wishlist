@@ -51,7 +51,7 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
         """Listen for data updates.
 
         @NOTE: this is copied from an unreleased version of HA (v0.108.0).  After that
-        Release we may be able to use this (and set the minimum version in hasc.json to
+        Release we may be able to use this (and set the minimum version in hacs.json to
         0.108.0)
         """
         schedule_refresh = not self._listeners

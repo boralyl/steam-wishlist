@@ -11,8 +11,9 @@ try:
     from homeassistant.components.binary_sensor import BinarySensorEntity
 except ImportError:
     # Prior to HA v0.110
-    from homeassistant.components.binary_sensor import BinarySensorDevice as BinarySensorEntity
-
+    from homeassistant.components.binary_sensor import (
+        BinarySensorDevice as BinarySensorEntity,
+    )
 
 
 _LOGGER = logging.getLogger(__name__)
