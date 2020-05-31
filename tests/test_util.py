@@ -47,7 +47,7 @@ def test_get_steam_game_with_sale_price():
         "box_art_url": "https://steamcdn-a.akamaihd.net/steam/apps/975150/header_292x136.jpg?t=1590678003",
         "normal_price": 19.99,
         "percent_off": 15,
-        "sale_price": 16.990000000000002,
+        "sale_price": 16.99,
         "steam_id": "975150",
         "title": "Resolutiion",
     }

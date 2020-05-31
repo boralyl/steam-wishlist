@@ -24,7 +24,7 @@ def get_steam_game(game_id: int, game: Dict[str, Any]) -> SteamGame:
     sale_price: Optional[float] = None
     if pricing and discount_pct:
         # Price is an integer so $6.00 is 600.
-        sale_price = pricing["price"] * 0.01
+        sale_price = round(pricing["price"] * 0.01, 2)
 
     game: SteamGame = {
         "box_art_url": game["capsule"],
