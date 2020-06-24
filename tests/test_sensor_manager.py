@@ -98,9 +98,6 @@ async def test_sensormanager_async_update_items_success(hass, coordinator_mock):
     }
     manager.async_update_items()
 
-    import pprint
-
-    pprint.pprint(mock_async_add_entities.call_args_list)
     expected_add_entities_calls = [
         # Wishlist entity
         call([manager.current_wishlist[sensor_manager.WISHLIST_ID]]),
