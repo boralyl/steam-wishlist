@@ -1,6 +1,8 @@
 """Tests for the SensorManager class."""
 from typing import Dict
 
+from pytest_homeassistant_custom_component.async_mock import AsyncMock, call
+
 from custom_components.steam_wishlist import sensor_manager
 from custom_components.steam_wishlist.entities import (
     SteamGameEntity,
@@ -9,7 +11,6 @@ from custom_components.steam_wishlist.entities import (
 from custom_components.steam_wishlist.sensor_manager import SteamEntity
 from custom_components.steam_wishlist.types import SteamGame
 from custom_components.steam_wishlist.util import get_steam_game
-from pytest_homeassistant.async_mock import AsyncMock, call
 
 
 async def test_async_remove_games(manager_mock):

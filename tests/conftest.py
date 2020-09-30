@@ -1,7 +1,7 @@
 """pytest fixtures."""
 from aioresponses import aioresponses
 import pytest
-from pytest_homeassistant.async_mock import Mock
+from pytest_homeassistant_custom_component.async_mock import Mock
 
 
 @pytest.fixture

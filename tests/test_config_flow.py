@@ -1,10 +1,10 @@
 """config_flow tests."""
 from unittest import mock
 
-from custom_components.steam_wishlist import config_flow
 import pytest
-from pytest_homeassistant.async_mock import patch
+from pytest_homeassistant_custom_component.async_mock import patch
 
+from custom_components.steam_wishlist import config_flow
 from homeassistant import config_entries
 
 
