@@ -2,8 +2,7 @@
   "config": {
     "error": {
       "invalid_profile_id": "Fant ikke en Steam-profil med den oppgitte ID-en.",
-      "invalid_user": "
-Fant ikke en dampkonto tilknyttet det oppgitte navnet, eller profilen din er ikke offentlig, se https://github.com/boralyl/steam-wishlist#pre-installation",
+      "invalid_user": "Fant ikke en dampkonto tilknyttet det oppgitte navnet, eller profilen din er ikke offentlig, se https://github.com/boralyl/steam-wishlist#pre-installation",
       "missing": "Skriv inn Steam-kontonavnet eller Steam-profil-ID-en."
     },
     "step": {
@@ -15,7 +14,6 @@ Fant ikke en dampkonto tilknyttet det oppgitte navnet, eller profilen din er ikk
         "description": "Skriv inn enten Steam-kontonavnet ditt eller din Steam-profil-ID.",
         "title": "Oppsett"
       }
-    },
-    "title": "Steam Wishlist"
+    }
   }
 }

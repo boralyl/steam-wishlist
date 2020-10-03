@@ -1,0 +1,19 @@
+{
+  "config": {
+    "error": {
+      "invalid_profile_id": "Could not find a Steam profile with the provided ID.",
+      "invalid_user": "Could not find a steam account associated with the provided name or your profile is not public, see https://github.com/boralyl/steam-wishlist#pre-installation",
+      "missing": "Enter your Steam account name or Steam profile ID."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "steam_account_name": "Steam account name",
+          "steam_profile_id": "Steam profile id (e.g. 7656119383323351)"
+        },
+        "description": "Enter EITHER your Steam account name OR your Steam profile ID.",
+        "title": "Setup"
+      }
+    }
+  }
+}
