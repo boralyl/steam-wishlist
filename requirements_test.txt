@@ -2,7 +2,7 @@
 # make new things fail. Manually update these pins when pulling in a
 # new version
 
-aioresponses==0.6.3
+aioresponses
 codecov
 coverage>=5.2.0,<5.3.0
 mypy
