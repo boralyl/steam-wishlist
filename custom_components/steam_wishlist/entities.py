@@ -92,7 +92,9 @@ class SteamGameEntity(BinarySensorEntity):
     entity_id = None
 
     def __init__(
-        self, manager, game: SteamGame,
+        self,
+        manager,
+        game: SteamGame,
     ):
         super().__init__()
         self.game = game
@@ -108,7 +110,16 @@ class SteamGameEntity(BinarySensorEntity):
     @property
     def is_on(self):
         """Return True if the binary sensor is on."""
-        pricing = self.coordinator.data[self.game["steam_id"]]
+        try:
+            pricing = self.coordinator.data[self.game["steam_id"]]
+        except KeyError:
+            _LOGGER.warning(
+                "%s not found in self.coordinator.data keys (%s), assuming False. Data was %s",
+                self.game,
+                list(self.coordinator.data.keys()),
+                self.coordinator.data,
+            )
+            return False
         try:
             pricing: dict = self.coordinator.data[self.game["steam_id"]]["subs"][0]
             discount_pct = pricing["discount_pct"]

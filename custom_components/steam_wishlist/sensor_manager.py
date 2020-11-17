@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union
 
 from homeassistant import core
 from homeassistant.core import callback
@@ -38,36 +38,33 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=SCAN_INTERVAL,
         )
 
-    async def _async_fetch_data(self):
+    async def _async_fetch_data(self) -> Dict[str, Dict[str, Any]]:
         """Fetch the data for the coordinator."""
-        async with self.http_session.get(self.url) as resp:
-            data = await resp.json()
+        data: Dict[str, Dict[str, Any]] = {}
+        # Attempt to look up to 10 pages of data. There does not appear to be a static
+        # number of results returned, it seems random. There also isn't any indication
+        # in the response that to let us know there are more pages to fetch. An empty
+        # array will be returned if we request a page of results when a user doesn't
+        # have that many.
+        for page in range(10):
+            url = f"{self.url}?p={page}"
+            async with self.http_session.get(url) as resp:
+                result = await resp.json()
+                if not isinstance(result, dict):
+                    _LOGGER.warning(
+                        "async_fetch_data data was not a dict its %s. status code: %s",
+                        result,
+                        resp.status,
+                    )
+                    break
+                data.update(result)
+                if len(result) <= 50:
+                    # Even though we don't know the number of results per page, it seems
+                    # to be well over 50, likely between 70-100. So don't bother a 2nd
+                    # request if the result is this small.
+                    break
+
         return data
-
-    @callback
-    def async_add_listener(
-        self, update_callback: core.CALLBACK_TYPE
-    ) -> Callable[[], None]:
-        """Listen for data updates.
-
-        @NOTE: this is copied from an unreleased version of HA (v0.108.0).  After that
-        Release we may be able to use this (and set the minimum version in hacs.json to
-        0.108.0)
-        """
-        schedule_refresh = not self._listeners
-
-        self._listeners.append(update_callback)
-
-        # This is the first listener, set up interval.
-        if schedule_refresh:
-            self._schedule_refresh()
-
-        @callback
-        def remove_listener() -> None:
-            """Remove update listener."""
-            self.async_remove_listener(update_callback)
-
-        return remove_listener
 
 
 async def async_remove_games(
@@ -139,8 +136,18 @@ class SensorManager:
             new_sensors.append(self.current_wishlist[WISHLIST_ID])
 
         new_binary_sensors: List[SteamGameEntity] = []
-        # {"success": 2} This indicates an empty wishlist.
-        if "success" not in self.coordinator.data:
+
+        process_data = True
+        if not isinstance(self.coordinator.data, dict):
+            # This seems to happen when we get an unexpected response.  This typically
+            # means an intermittent request failure. Data is then an empty dict. Should
+            # something different happen here?
+            _LOGGER.warning(
+                "Coordinator data unexpectedly not a dict: %s", self.coordinator.data
+            )
+            process_data = False
+        # {"success": 2} This CAN (but not always) indicate an empty wishlist.
+        if "success" not in self.coordinator.data and process_data:
             for game_id, game in self.coordinator.data.items():
                 existing = self.current_wishlist.get(game_id)
                 if existing is not None:
