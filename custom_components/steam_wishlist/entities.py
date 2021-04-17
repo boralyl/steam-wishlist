@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify
 
 from .types import SteamGame
@@ -19,13 +19,12 @@ except ImportError:
 _LOGGER = logging.getLogger(__name__)
 
 
-class SteamWishlistEntity(Entity):
+class SteamWishlistEntity(CoordinatorEntity):
     """Representation of a Steam wishlist."""
 
     def __init__(self, manager):
-        super().__init__()
+        super().__init__(coordinator=manager.coordinator)
         self.manager = manager
-        self.coordinator = manager.coordinator
         self._attrs = {}
 
     @property
@@ -71,22 +70,8 @@ class SteamWishlistEntity(Entity):
     def device_state_attributes(self):
         return {"on_sale": self.on_sale}
 
-    async def async_update(self):
-        """Update the entity.
 
-        This is only used by the generic entity update service. Normal updates
-        happen via the coordinator.
-        """
-        await self.coordinator.async_request_refresh()
-
-    async def async_added_to_hass(self):
-        """Connect to dispatcher listening for entity data notifications."""
-        self.async_on_remove(
-            self.coordinator.async_add_listener(self.async_write_ha_state)
-        )
-
-
-class SteamGameEntity(BinarySensorEntity):
+class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
     """Representation of a Steam game."""
 
     entity_id = None
@@ -96,10 +81,9 @@ class SteamGameEntity(BinarySensorEntity):
         manager,
         game: SteamGame,
     ):
-        super().__init__()
+        super().__init__(coordinator=manager.coordinator)
         self.game = game
         self.manager = manager
-        self.coordinator = manager.coordinator
         self.slug = slugify(self.game["title"])
         self.entity_id = f"binary_sensor.{self.unique_id}"
 
@@ -151,18 +135,4 @@ class SteamGameEntity(BinarySensorEntity):
     def device_state_attributes(self):
         return get_steam_game(
             self.game["steam_id"], self.coordinator.data[self.game["steam_id"]]
-        )
-
-    async def async_update(self):
-        """Update the entity.
-
-        This is only used by the generic entity update service. Normal updates
-        happen via the coordinator.
-        """
-        await self.coordinator.async_request_refresh()
-
-    async def async_added_to_hass(self):
-        """Connect to dispatcher listening for entity data notifications."""
-        self.async_on_remove(
-            self.coordinator.async_add_listener(self.async_write_ha_state)
         )
