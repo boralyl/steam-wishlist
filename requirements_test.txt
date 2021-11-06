@@ -4,7 +4,7 @@
 
 aioresponses
 codecov
-coverage>=5.2.0,<5.3.0
+coverage
 mypy
 pytest-cov
 pytest-homeassistant-custom-component>=0.4.8
