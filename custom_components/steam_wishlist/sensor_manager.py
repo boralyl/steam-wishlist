@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Union
 from homeassistant import core
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -51,11 +52,9 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             async with self.http_session.get(url) as resp:
                 result = await resp.json()
                 if not isinstance(result, dict):
-                    _LOGGER.warning(
-                        "async_fetch_data data was not a dict its %s. status code: %s",
-                        result,
-                        resp.status,
-                    )
+                    # An empty array will be returned if we request a page of results
+                    # when a user doesn't have that many. e.g. requesting page 2 when
+                    # they only have 1 page of results.
                     break
                 data.update(result)
                 if len(result) <= 50:
@@ -65,6 +64,16 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
                     break
 
         return data
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        unique_id = self.config_entry.unique_id
+        return DeviceInfo(
+            identifiers={(DOMAIN, unique_id)},
+            manufacturer="Valve Corp",
+            name="Steam",
+            configuration_url=self.url,
+        )
 
 
 async def async_remove_games(
