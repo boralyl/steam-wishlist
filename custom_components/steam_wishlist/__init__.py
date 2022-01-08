@@ -18,10 +18,14 @@ async def async_setup_entry(
 ) -> bool:
     """Set up platforms from a ConfigEntry."""
     url = entry.data["url"]
+    # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
+    steam_id = url.split("/")[-3]
     hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, url)
 
     if not entry.unique_id:
-        hass.config_entries.async_update_entry(entry, unique_id="steam_wishlist")
+        hass.config_entries.async_update_entry(
+            entry, unique_id=f"steam_wishlist_{steam_id}"
+        )
 
     for component in PLATFORMS:
         hass.async_create_task(

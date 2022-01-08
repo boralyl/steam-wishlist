@@ -88,7 +88,7 @@ def test_steamgameentity_name_property(manager_mock):
     assert "Resolutiion" == entity.name
 
 
-def test_steamgameentity_device_state_attributes_property(manager_mock):
+def test_steamgameentity_extra_state_attributes_property(manager_mock):
     """Test the device_state_attributes property."""
     game_id = "975150"
     game = util.get_steam_game(game_id, manager_mock.coordinator.data[game_id])
@@ -101,4 +101,4 @@ def test_steamgameentity_device_state_attributes_property(manager_mock):
         "steam_id": "975150",
         "title": "Resolutiion",
     }
-    assert expected == entity.device_state_attributes
+    assert expected == entity.extra_state_attributes

@@ -29,7 +29,7 @@ class SteamWishlistEntity(CoordinatorEntity):
 
     @property
     def unique_id(self) -> str:
-        return "steam_wishlist"
+        return f"steam_wishlist_{self.coordinator.steam_id}"
 
     @property
     def on_sale(self):
@@ -49,7 +49,7 @@ class SteamWishlistEntity(CoordinatorEntity):
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return "Steam Wishlist"
+        return f"Steam Wishlist ({self.coordinator.steam_id})"
 
     @property
     def unit_of_measurement(self) -> str:
@@ -67,8 +67,12 @@ class SteamWishlistEntity(CoordinatorEntity):
         return len(self.on_sale)
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {"on_sale": self.on_sale}
+
+    @property
+    def device_info(self):
+        return self.coordinator.device_info
 
 
 class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
@@ -97,6 +101,8 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
         try:
             pricing = self.coordinator.data[self.game["steam_id"]]
         except KeyError:
+            # This can happen when a game is removed from your wishlist and the entity
+            # has not yet been removed from HA.
             _LOGGER.warning(
                 "%s not found in self.coordinator.data keys (%s), assuming False. Data was %s",
                 self.game,
@@ -132,7 +138,7 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
         return self.is_on
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return get_steam_game(
             self.game["steam_id"], self.coordinator.data[self.game["steam_id"]]
         )

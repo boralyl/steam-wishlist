@@ -1,8 +1,8 @@
 """config_flow tests."""
 from unittest import mock
+from unittest.mock import patch
 
 import pytest
-from pytest_homeassistant_custom_component.async_mock import patch
 
 from custom_components.steam_wishlist import config_flow
 from homeassistant import config_entries
@@ -20,6 +20,7 @@ async def test_flow_init(hass):
         "errors": {},
         "flow_id": mock.ANY,
         "handler": "steam_wishlist",
+        "last_step": None,
         "step_id": "user",
         "type": "form",
     }
@@ -69,11 +70,12 @@ async def test_flow_user_step_steam_account_name_success(hass):
         "data": {"url": config_flow.WISHLIST_JSON_URL.format(user_id="1234567890")},
         "description": None,
         "description_placeholders": None,
+        "options": {},
         "result": mock.ANY,
     }
     assert expected == result
     actual_config_entry: config_entries.ConfigEntry = result["result"]
-    assert "steam_wishlist" == actual_config_entry.unique_id
+    assert "steam_wishlist_1234567890" == actual_config_entry.unique_id
 
 
 async def test_flow_user_step_steam_profile_id_invalid(hass):
@@ -112,11 +114,12 @@ async def test_flow_user_step_steam_profile_id_success(hass):
         "data": {"url": config_flow.WISHLIST_JSON_URL.format(user_id="1234567890")},
         "description": None,
         "description_placeholders": None,
+        "options": {},
         "result": mock.ANY,
     }
     assert expected == result
     actual_config_entry: config_entries.ConfigEntry = result["result"]
-    assert "steam_wishlist" == actual_config_entry.unique_id
+    assert "steam_wishlist_1234567890" == actual_config_entry.unique_id
 
 
 async def test_async_check_profile_id_valid_is_valid(mock_aioresponse):

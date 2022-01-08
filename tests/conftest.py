@@ -1,7 +1,14 @@
 """pytest fixtures."""
+from unittest.mock import Mock
+
 from aioresponses import aioresponses
 import pytest
-from pytest_homeassistant_custom_component.async_mock import Mock
+
+
+@pytest.fixture(autouse=True)
+def auto_enable_custom_integrations(enable_custom_integrations):
+    """Enable custom integrations defined in the test dir."""
+    yield
 
 
 @pytest.fixture

@@ -1,7 +1,6 @@
 """Tests for the SensorManager class."""
 from typing import Dict
-
-from pytest_homeassistant_custom_component.async_mock import AsyncMock, call
+from unittest.mock import AsyncMock, Mock, call
 
 from custom_components.steam_wishlist import sensor_manager
 from custom_components.steam_wishlist.entities import (
@@ -92,7 +91,7 @@ async def test_sensormanager_async_update_items_success(hass, coordinator_mock):
     """Test that we add all new entities."""
     manager = sensor_manager.SensorManager(hass, url="http://fake.com")
     manager.coordinator = coordinator_mock
-    mock_async_add_entities = AsyncMock()
+    mock_async_add_entities = Mock()
     manager._component_add_entities = {
         "binary_sensor": mock_async_add_entities,
         "sensor": mock_async_add_entities,
