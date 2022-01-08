@@ -14,6 +14,7 @@ from .util import get_steam_game
 
 _LOGGER = logging.getLogger(__name__)
 WISHLIST_ID = -1
+DEVICE_CONFIGURATION_URL = "https://store.steampowered.com/wishlist/profiles/{}/"
 
 SteamEntity = Union[SteamGameEntity, SteamWishlistEntity]
 
@@ -68,11 +69,13 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
     @property
     def device_info(self) -> DeviceInfo:
         unique_id = self.config_entry.unique_id
+        # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
+        steam_id = self.url.split("/")[-3]
         return DeviceInfo(
             identifiers={(DOMAIN, unique_id)},
             manufacturer="Valve Corp",
             name="Steam",
-            configuration_url=self.url,
+            configuration_url=DEVICE_CONFIGURATION_URL.format(steam_id),
         )
 
 

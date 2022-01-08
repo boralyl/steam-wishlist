@@ -67,7 +67,7 @@ class SteamWishlistEntity(CoordinatorEntity):
         return len(self.on_sale)
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {"on_sale": self.on_sale}
 
     @property
@@ -138,7 +138,7 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
         return self.is_on
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return get_steam_game(
             self.game["steam_id"], self.coordinator.data[self.game["steam_id"]]
         )
