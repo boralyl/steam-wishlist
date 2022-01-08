@@ -24,7 +24,9 @@ async def async_setup_entry(
 
     if not entry.unique_id:
         hass.config_entries.async_update_entry(
-            entry, unique_id=f"steam_wishlist_{steam_id}"
+            entry,
+            unique_id=f"steam_wishlist_{steam_id}",
+            title=f"Steam Wishlist ({steam_id})",
         )
 
     for component in PLATFORMS:
