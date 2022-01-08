@@ -29,7 +29,7 @@ class SteamWishlistEntity(CoordinatorEntity):
 
     @property
     def unique_id(self) -> str:
-        return "steam_wishlist"
+        return f"steam_wishlist_{self.coordinator.steam_id}"
 
     @property
     def on_sale(self):
@@ -49,7 +49,7 @@ class SteamWishlistEntity(CoordinatorEntity):
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return "Steam Wishlist"
+        return f"Steam Wishlist ({self.coordinator.steam_id})"
 
     @property
     def unit_of_measurement(self) -> str:

@@ -31,6 +31,8 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass: core.HomeAssistant, url: str):
         self.url = url
+        # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
+        self.steam_id = self.url.split("/")[-3]
         self.http_session = async_get_clientsession(hass)
         super().__init__(
             hass,
@@ -69,13 +71,11 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
     @property
     def device_info(self) -> DeviceInfo:
         unique_id = self.config_entry.unique_id
-        # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
-        steam_id = self.url.split("/")[-3]
         return DeviceInfo(
             identifiers={(DOMAIN, unique_id)},
             manufacturer="Valve Corp",
             name="Steam",
-            configuration_url=DEVICE_CONFIGURATION_URL.format(steam_id),
+            configuration_url=DEVICE_CONFIGURATION_URL.format(self.steam_id),
         )
 
 
