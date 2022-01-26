@@ -10,6 +10,9 @@ def test_get_steam_game_unreleased_game():
         "capsule": "https://steamcdn-a.akamaihd.net/steam/apps/870780/header_292x136.jpg?t=1572428374",
         "release_date": "1556236800",
         "release_string": "Coming August 2020",
+        "review_desc": "3 user reviews",
+        "reviews_percent": 100,
+        "reviews_total": "3",
         "subs": [],
         "type": "Game",
     }
@@ -18,6 +21,9 @@ def test_get_steam_game_unreleased_game():
         "box_art_url": "https://steamcdn-a.akamaihd.net/steam/apps/870780/header_292x136.jpg?t=1572428374",
         "normal_price": None,
         "percent_off": 0,
+        "review_desc": "3 user reviews",
+        "reviews_percent": 100,
+        "reviews_total": "3",
         "sale_price": None,
         "steam_id": "870780",
         "title": "Control",
@@ -41,12 +47,18 @@ def test_get_steam_game_with_sale_price():
         ],
         "type": "Game",
         "added": 1590721175,
+        "review_desc": "3 user reviews",
+        "reviews_percent": 100,
+        "reviews_total": "3",
     }
     actual = get_steam_game(game_id, game)
     expected = {
         "box_art_url": "https://steamcdn-a.akamaihd.net/steam/apps/975150/header_292x136.jpg?t=1590678003",
         "normal_price": 19.99,
         "percent_off": 15,
+        "review_desc": "3 user reviews",
+        "reviews_percent": 100,
+        "reviews_total": "3",
         "sale_price": 16.99,
         "steam_id": "975150",
         "title": "Resolutiion",

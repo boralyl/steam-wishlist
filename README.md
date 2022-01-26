@@ -68,14 +68,17 @@ indicate if it is on sale or not.
 
 The following state attributes are available for this sensor:
 
-| attribute    | description                             |
-| ------------ | --------------------------------------- |
-| box_art_url  | The URL for the box art of the game.    |
-| normal_price | The normal price of the game.           |
-| sale_price   | The sale price of the game.             |
-| percent_off  | The percentage off of the normal price. |
-| steam_id     | The Steam ID of the game.               |
-| title        | The title of the game.                  |
+| attribute       | description                                      |
+| --------------- | ------------------------------------------------ |
+| box_art_url     | The URL for the box art of the game.             |
+| normal_price    | The normal price of the game.                    |
+| sale_price      | The sale price of the game.                      |
+| percent_off     | The percentage off of the normal price.          |
+| steam_id        | The Steam ID of the game.                        |
+| title           | The title of the game.                           |
+| review_desc     | The review description, e.g. `Mostly positive`   |
+| reviews_percent | The percentage of positive reviews for the game. |
+| reviews_total   | The total number of reviews.                     |
 
 ## Displaying in Lovelace
 
