@@ -3,8 +3,8 @@
 # new version
 
 aioresponses
-codecov
-coverage
-mypy
-pytest-cov
+codecov==2.1.12
+coverage==6.2.0
+mypy==0.931
+pytest-cov==2.12.1
 pytest-homeassistant-custom-component>=0.6.2
