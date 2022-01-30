@@ -8,3 +8,4 @@ coverage
 mypy
 pytest-cov
 pytest-homeassistant-custom-component>=0.4.8
+wheel
