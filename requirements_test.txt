@@ -7,4 +7,4 @@ codecov
 coverage
 mypy
 pytest-cov
-pytest-homeassistant-custom-component>=0.4.8
+pytest-homeassistant-custom-component>=0.6.2
