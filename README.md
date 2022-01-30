@@ -91,7 +91,7 @@ in sensors is identical. So if you install the card you add it to lovelace like 
 
 ```yaml
 - type: custom:nintendo-wishlist-card
-  entity: sensor.steam_wishlist
+  entity: sensor.steam_wishlist_978793482343112
   title: Steam Wishlist
   image_style: backgroundart
   max: 10
