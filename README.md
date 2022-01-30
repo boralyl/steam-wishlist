@@ -43,11 +43,11 @@ will not be able to parse your wishlist.
 
 After you successfully setup the integration a number of sensors will be created.
 
-### `sensor.steam_wishlist`
+### `sensor.steam_wishlist_<your-profile-id>`
 
 This sensor will report the number of games on sale from your wishlist.
 
-[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/master/assets/sensor.steam_wishlist.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/sensor.steam_wishlist.png)
+[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/main/assets/sensor.steam_wishlist.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/sensor.steam_wishlist.png)
 
 #### Attributes
 
@@ -62,7 +62,7 @@ The following state attributes are available for this sensor:
 A binary sensor will be created for each game on your wishlist. It's state will
 indicate if it is on sale or not.
 
-[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/master/assets/binary_sensor.steam_wishlist_terraria.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/binary_sensor.steam_wishlist_terraria.png)
+[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/main/assets/binary_sensor.steam_wishlist_terraria.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/binary_sensor.steam_wishlist_terraria.png)
 
 #### Attributes
 
@@ -97,4 +97,4 @@ in sensors is identical. So if you install the card you add it to lovelace like 
   max: 10
 ```
 
-[![wishlist in the nintendo card](https://github.com/boralyl/steam-wishlist/raw/master/assets/custom-card.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/custom-card.png)
+[![wishlist in the nintendo card](https://github.com/boralyl/steam-wishlist/raw/main/assets/custom-card.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/custom-card.png)
