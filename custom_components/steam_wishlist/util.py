@@ -19,7 +19,10 @@ def get_steam_game(game_id: int, game: Dict[str, Any]) -> SteamGame:
 
     normal_price: Optional[float] = None
     if pricing:
-        normal_price = round(pricing["price"] / (100 - discount_pct), 2)
+        if discount_pct == 100:
+            normal_price = pricing["price"]
+        else:
+            normal_price = round(pricing["price"] / (100 - discount_pct), 2)
 
     sale_price: Optional[float] = None
     if pricing and discount_pct:
