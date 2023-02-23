@@ -1,11 +1,11 @@
 {
+  "domain": "steam_wishlist",
+  "name": "Steam Wishlist",
   "codeowners": ["@boralyl"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/boralyl/steam-wishlist",
-  "domain": "steam_wishlist",
   "iot_class": "cloud_polling",
-  "name": "Steam Wishlist",
   "requirements": [],
   "version": "2.2.3"
 }
