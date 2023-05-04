@@ -1,7 +1,7 @@
 [![](https://img.shields.io/github/release/boralyl/steam-wishlist/all.svg?style=for-the-badge)](https://github.com/boralyl/steam-wishlist/releases)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
 [![](https://img.shields.io/github/license/boralyl/steam-wishlist?style=for-the-badge)](LICENSE)
-[![](https://img.shields.io/github/workflow/status/boralyl/steam-wishlist/pythonpackage.yaml?branch=main&style=for-the-badge)](https://github.com/boralyl/steam-wishlist/actions)
+[![](https://img.shields.io/github/actions/workflow/status/boralyl/steam-wishlist/pythonpackage.yaml?branch=main&style=for-the-badge)](https://github.com/boralyl/steam-wishlist/actions)
 
 # Steam Wishlist for Home Assistant
 
