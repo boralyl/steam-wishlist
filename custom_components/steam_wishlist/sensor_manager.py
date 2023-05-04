@@ -5,7 +5,7 @@ from homeassistant import core
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.entity_registry import async_get_registry
+from homeassistant.helpers.entity_registry import async_get
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, SCAN_INTERVAL
@@ -29,7 +29,7 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
     is scheduled.
     """
 
-    def __init__(self, hass: core.HomeAssistant, url: str):
+    def __init__(self, hass: core.HomeAssistant, url: str) -> None:
         self.url = url
         # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
         self.steam_id = self.url.split("/")[-3]
@@ -42,9 +42,9 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=SCAN_INTERVAL,
         )
 
-    async def _async_fetch_data(self) -> Dict[str, Dict[str, Any]]:
+    async def _async_fetch_data(self) -> dict[str, dict[str, Any]]:
         """Fetch the data for the coordinator."""
-        data: Dict[str, Dict[str, Any]] = {}
+        data: dict[str, dict[str, Any]] = {}
         # Attempt to look up to 10 pages of data. There does not appear to be a static
         # number of results returned, it seems random. There also isn't any indication
         # in the response that to let us know there are more pages to fetch. An empty
@@ -80,7 +80,7 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
 
 
 async def async_remove_games(
-    current_wishlist: Dict[int, SteamEntity],
+    current_wishlist: dict[int, SteamEntity],
     coordinator: SteamWishlistDataUpdateCoordinator,
 ) -> None:
     """Remove games no longer on the wish list.
@@ -99,7 +99,7 @@ async def async_remove_games(
             # Need to remove entity
             removed_entities.append(game_id)
             await entity.async_remove()
-            ent_registry = await async_get_registry(coordinator.hass)
+            ent_registry = await async_get(coordinator.hass)
             if entity.entity_id in ent_registry.entities:
                 ent_registry.async_remove(entity.entity_id)
 
@@ -113,12 +113,12 @@ class SensorManager:
     NOTE: This is intended to be a singleton.
     """
 
-    def __init__(self, hass: core.HomeAssistant, url: str):
+    def __init__(self, hass: core.HomeAssistant, url: str) -> None:
         self.hass = hass
         self.coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
         self._component_add_entities = {}
         self.cleanup_jobs = []
-        self.current_wishlist: Dict[int, SteamEntity] = {}
+        self.current_wishlist: dict[int, SteamEntity] = {}
 
     async def async_register_component(
         self, platform: str, async_add_entities: Callable
@@ -142,12 +142,12 @@ class SensorManager:
             # Haven't registered both `sensor` and `binary_sensor` platforms yet.
             return
 
-        new_sensors: List[SteamWishlistEntity] = []
+        new_sensors: list[SteamWishlistEntity] = []
         if not self.current_wishlist.get(WISHLIST_ID):
             self.current_wishlist[WISHLIST_ID] = SteamWishlistEntity(self)
             new_sensors.append(self.current_wishlist[WISHLIST_ID])
 
-        new_binary_sensors: List[SteamGameEntity] = []
+        new_binary_sensors: list[SteamGameEntity] = []
 
         process_data = True
         if not isinstance(self.coordinator.data, dict):
