@@ -11,7 +11,7 @@ def get_steam_game(game_id: int, game: Dict[str, Any]) -> SteamGame:
     pricing: Optional[Dict[str, Any]] = None
     try:
         pricing: Dict[str, Any] = game["subs"][0]
-        discount_pct = pricing["discount_pct"]
+        discount_pct = pricing["discount_pct"] or 0
     except IndexError:
         # This typically means this game is not yet released so pricing is not known.
         pricing = None
@@ -19,15 +19,16 @@ def get_steam_game(game_id: int, game: Dict[str, Any]) -> SteamGame:
 
     normal_price: Optional[float] = None
     if pricing:
+        price = int(pricing["price"])
         if discount_pct == 100:
-            normal_price = pricing["price"]
+            normal_price = price
         else:
-            normal_price = round(pricing["price"] / (100 - discount_pct), 2)
+            normal_price = round(price / (100 - discount_pct), 2)
 
     sale_price: Optional[float] = None
     if pricing and discount_pct:
         # Price is an integer so $6.00 is 600.
-        sale_price = round(pricing["price"] * 0.01, 2)
+        sale_price = round(int(pricing["price"]) * 0.01, 2)
 
     game: SteamGame = {
         "box_art_url": game["capsule"],
