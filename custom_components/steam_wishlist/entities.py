@@ -115,6 +115,8 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
             discount_pct = pricing["discount_pct"]
         except IndexError:
             discount_pct = 0
+        if discount_pct is None:
+            return False
         return discount_pct > 0
 
     @property
