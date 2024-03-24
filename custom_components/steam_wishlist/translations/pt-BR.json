@@ -13,6 +13,15 @@
           },
           "description": "Digite o nome da sua conta Steam OU o ID do seu perfil Steam.",
           "title": "Configurar"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opções",
+        "data": {
+          "show_all_wishlist_items": "Exiba também itens da lista de desejos não em promoção no Upcoming Media Card (reinicialização necessária)"
         }
       }
     }

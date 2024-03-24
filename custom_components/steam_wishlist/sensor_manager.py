@@ -113,8 +113,9 @@ class SensorManager:
     NOTE: This is intended to be a singleton.
     """
 
-    def __init__(self, hass: core.HomeAssistant, url: str) -> None:
+    def __init__(self, hass: core.HomeAssistant, config_entry, url: str) -> None:
         self.hass = hass
+        self.config_entry = config_entry
         self.coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
         self._component_add_entities = {}
         self.cleanup_jobs = []
@@ -137,9 +138,9 @@ class SensorManager:
 
     @callback
     def async_update_items(self):
-        """Add or remove sensors based on coordinator data."""
+        """Add or update sensors based on coordinator data."""
         if len(self._component_add_entities) < 2:
-            # Haven't registered both `sensor` and `binary_sensor` platforms yet.
+            # Wait until both sensor and binary_sensor platforms are registered
             return
 
         new_sensors: list[SteamWishlistEntity] = []
@@ -166,8 +167,8 @@ class SensorManager:
                     continue
 
                 # Found a new game that we will need to create a new binary_sensor for.
-                steam_game = get_steam_game(game_id, game)
-                self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
+                steam_game = get_steam_game(game_id, game, self.config_entry)
+                self.current_wishlist[game_id] = SteamGameEntity(self, self.config_entry, steam_game)
                 new_binary_sensors.append(self.current_wishlist[game_id])
 
         if new_sensors:
