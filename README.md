@@ -68,27 +68,61 @@ indicate if it is on sale or not.
 
 The following state attributes are available for this sensor:
 
-| attribute       | description                                      |
-| --------------- | ------------------------------------------------ |
-| box_art_url     | The URL for the box art of the game.             |
-| normal_price    | The normal price of the game.                    |
-| sale_price      | The sale price of the game.                      |
-| percent_off     | The percentage off of the normal price.          |
-| steam_id        | The Steam ID of the game.                        |
-| title           | The title of the game.                           |
-| review_desc     | The review description, e.g. `Mostly positive`   |
-| reviews_percent | The percentage of positive reviews for the game. |
-| reviews_total   | The total number of reviews.                     |
+| attribute       | description                                                    |
+| --------------- | -------------------------------------------------------------- |
+| title           | Title of the game                                              |
+| rating          | Reviews e.g. `Reviews: 92% (Very Positive)` &nbsp;**\***       |
+| price           | Price description of game &nbsp;**\***                         |
+| genres          | Genres of game e.g. `FPS, Action, First-Person` &nbsp;**\***   |
+| release         | Release date of game &nbsp;**\***                              |
+| airdate         | Date game was released (Unix timestamp format)                 |
+| normal_price    | Price                                                          |
+| percent_off     | Percentage off of the normal price                             |
+| review_desc     | Review description                                             |
+| reviews_percent | Percentage of positive reviews                                 |
+| reviews_total   | Total number of reviews                                        |
+| sale_price      | Sale price of the game                                         |
+| steam_id        | Steam ID of the game                                           |
+| box_art_url     | URL for the background 16:9 aspect ratio image                 |
+| fanart          | URL for the background 16:9 aspect ratio image &nbsp;**\***    |
+| poster          | URL for the background 3:4 image &nbsp;**\***                  |
+| deep_link       | Clickable hyperlink to game on Steam website &nbsp;**\***      |
+
+
+• _Attributes marked with **\*** are for **upcoming_media_card** only._
+
 
 ## Displaying in Lovelace
 
-You are able to use any card or custom card to show a list of your games that are
-on sale by utilizing the `sensor.steam_wishlist`. Additionally you can use the
-[nintendo-wishlist-card](https://github.com/custom-cards/nintendo-wishlist-card)
-to display the games on sale from your Steam wish list. This is possible because
-I maintain this integration as well as the [nintendo-wishlist integration](https://github.com/custom-components/sensor.nintendo_wishlist), and the way they store their attributes
-in sensors is identical. So if you install the card you add it to lovelace like so:
+You are able to use any Home Assistant card to display a list of your games that are on sale by utilizing the `sensor.steam_wishlist` sensor. Below, are 2 cards that fully support this integration and its sensor attributes:
 
+
+### I. upcoming-media-card
+
+You can use [upcoming-media-card](https://github.com/custom-cards/upcoming-media-card) to display your Steam wishlist items that are on sale. You can also toggle displaying your non-sale wishlist items via the YAML setting `collapse: price=🎫` _(along with enabling the **Options** integration setting)_ like so:
+
+Example YAML:
+```yaml
+- type: custom:upcoming-media-card
+  entity: sensor.steam_wishlist_978793482343112
+  title: Steam Wishlist
+  image_style: fanart
+  collapse: price=🎫
+  max: 10
+```
+
+<img src="./assets/collapse_filter.gif" width="430">
+
+##### Enable the Steam Wishlist integration setting below: 
+<img src="./assets/options.png" width="430">
+
+---
+
+### II. nintendo-wishlist-card
+
+You can use [nintendo-wishlist-card](https://github.com/custom-cards/nintendo-wishlist-card) to display your Steam wishlist items that are on sale. This is possible since I also maintain the [nintendo-wishlist](https://github.com/custom-components/sensor.nintendo_wishlist) integration. You can add this card to Lovelace like so:
+
+Example YAML:
 ```yaml
 - type: custom:nintendo-wishlist-card
   entity: sensor.steam_wishlist_978793482343112
@@ -97,4 +131,4 @@ in sensors is identical. So if you install the card you add it to lovelace like 
   max: 10
 ```
 
-[![wishlist in the nintendo card](https://github.com/boralyl/steam-wishlist/raw/main/assets/custom-card.png)](https://github.com/boralyl/steam-wishlist/raw/main/assets/custom-card.png)
+<img src="./assets/custom-card.png" width="430">
