@@ -53,7 +53,7 @@ class SteamWishlistEntity(CoordinatorEntity):
             # This indicates an empty wishlist, just return an empty list.
             if game_id == "success":
                 break
-            games.append(get_steam_game(game_id, game, self.manager.config_entry))
+            games.append(get_steam_game(game_id, game, self.manager.store_all_wishlist_items))
         return games
 
     @property
@@ -87,7 +87,7 @@ class SteamWishlistEntity(CoordinatorEntity):
             'line4_default': '$genres',
             'icon': 'mdi:arrow-down-bold',
         }
-        data_list = [placeholders] + [game for game in self.games if game["sale_price"]]
+        data_list = [placeholders] + [game for game in self.games if game["sale_price"] is not None]
         return {"data": data_list, "on_sale": self.on_sale}
 
     @property
@@ -100,10 +100,10 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
 
     entity_id = None
 
-    def __init__(self, manager, config_entry, game: SteamGame):
+    def __init__(self, manager, game: SteamGame, store_all_wishlist_items: bool):
         super().__init__(coordinator=manager.coordinator)
-        self.config_entry = config_entry
         self.game = game
+        self.store_all_wishlist_items = store_all_wishlist_items
         self.manager = manager
         self.slug = slugify(self.game["title"])
         self.entity_id = f"binary_sensor.{self.unique_id}"
@@ -159,5 +159,5 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self):
         return get_steam_game(
-            self.game["steam_id"], self.coordinator.data[self.game["steam_id"]], self.config_entry
+            self.game["steam_id"], self.coordinator.data[self.game["steam_id"]], self.store_all_wishlist_items
         )

@@ -1,5 +1,5 @@
 import logging
-import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Optional
 
 from .types import SteamGame
@@ -7,7 +7,7 @@ from .types import SteamGame
 _LOGGER = logging.getLogger(__name__)
 
 
-def get_steam_game(game_id: int, game: Dict[str, Any], config_entry) -> SteamGame:
+def get_steam_game(game_id: int, game: Dict, store_all_wishlist_items: bool) -> SteamGame:
     """Get a SteamGame from a game dict."""
     pricing: Optional[Dict[str, Any]] = None
     try:
@@ -35,9 +35,6 @@ def get_steam_game(game_id: int, game: Dict[str, Any], config_entry) -> SteamGam
     review_desc = game.get('review_desc', 'No reviews')
     rating_info = f"Reviews:&nbsp;&nbsp;{reviews_percent}% ({review_desc})"
 
-    tags = game.get("tags", [])
-    tags_string = ", ".join(tags)
-
     try:
         original_price = float(normal_price if normal_price is not None else 0)
         sale_price_val = float(sale_price if sale_price is not None else original_price)
@@ -54,8 +51,18 @@ def get_steam_game(game_id: int, game: Dict[str, Any], config_entry) -> SteamGam
     except (ValueError, TypeError):
         price_info = "Price information unavailable"
 
+    def get_release_date(game):
+        release_date = game.get("release_date", "0")
+        if str(release_date).isdigit():
+            release_date_datetime = datetime.fromtimestamp(int(release_date), timezone.utc)
+            if datetime.now(timezone.utc) < release_date_datetime + timedelta(days=1):
+                return "Release date:&nbsp;&nbsp;" + release_date_datetime.strftime("%b %d, %Y") + "&nbsp;&nbsp;🆕"
+            else:
+                return "Released:&nbsp;&nbsp;" + release_date_datetime.strftime("%b %d, %Y")
+        else:
+            return "Unknown"
 
-    release_date = ("Release date:&nbsp;&nbsp;" + datetime.datetime.utcfromtimestamp(int(game.get("release_date", "0"))).strftime("%b %d, %Y") + "&nbsp;&nbsp;🆕" if datetime.datetime.utcnow() < datetime.datetime.utcfromtimestamp(int(game.get("release_date", "0")) + 86400) else "Released:&nbsp;&nbsp;" + datetime.datetime.utcfromtimestamp(int(game.get("release_date", "0"))).strftime("%b %d, %Y")) if str(game.get("release_date", "0")).isdigit() else "Unknown"
+    release_date = get_release_date(game)
 
     game: SteamGame = {
         "title": game["name"],
@@ -69,7 +76,7 @@ def get_steam_game(game_id: int, game: Dict[str, Any], config_entry) -> SteamGam
         "review_desc": game.get("review_desc", "No user reviews"),
         "reviews_percent": game.get("reviews_percent", 0),
         "reviews_total": game.get("reviews_total", "0"),
-        "sale_price": sale_price if not config_entry.options.get("show_all_wishlist_items", True) else str(sale_price),
+        "sale_price": str(sale_price) if store_all_wishlist_items else sale_price,
         "steam_id": str(game_id),
         "box_art_url": game["capsule"],
         "fanart": game.get("capsule"),

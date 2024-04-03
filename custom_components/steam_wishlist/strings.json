@@ -21,7 +21,7 @@
       "init": {
         "title": "Options",
         "data": {
-          "show_all_wishlist_items": "Display non-sale wishlist items too in Upcoming Media Card (reboot required)"
+          "show_all_wishlist_items": "Display non-sale wishlist items too in Upcoming Media Card"
         }
       }
     }

@@ -20,7 +20,8 @@ async def async_setup_entry(
     url = entry.data["url"]
     # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
     steam_id = url.split("/")[-3]
-    hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, entry, url)
+    store_all_wishlist_items = entry.options.get("show_all_wishlist_items", False)
+    hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, store_all_wishlist_items, url)
 
     if not entry.unique_id:
         hass.config_entries.async_update_entry(
