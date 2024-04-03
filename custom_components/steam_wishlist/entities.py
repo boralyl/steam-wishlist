@@ -36,8 +36,8 @@ class SteamWishlistEntity(CoordinatorEntity):
         return [game for game in self.games if self._is_price_valid(game["sale_price"])]
 
     def _is_price_valid(self, price):
-        # Ensures compatibility with 'sale_price' being dynamically typed as string or numeric 
-        # to accomodate boolean 'show_all_wishlist_items' option
+        # Ensures compatibility with 'sale_price' being dynamically typed as string or numeric
+        # to accommodate boolean 'show_all_wishlist_items' option
         if not price:
             return False
         try:
@@ -87,7 +87,11 @@ class SteamWishlistEntity(CoordinatorEntity):
             'line4_default': '$genres',
             'icon': 'mdi:arrow-down-bold',
         }
-        data_list = [placeholders] + [game for game in self.games if game["sale_price"] is not None]
+        if self.manager.store_all_wishlist_items:
+            games = self.games
+        else:
+            games = [game for game in self.games if game["sale_price"] is not None]
+        data_list = [placeholders] + games
         return {"data": data_list, "on_sale": self.on_sale}
 
     @property
