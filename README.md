@@ -71,10 +71,10 @@ The following state attributes are available for this sensor:
 | attribute       | description                                                    |
 | --------------- | -------------------------------------------------------------- |
 | title           | Title of the game                                              |
-| rating          | Reviews e.g. `Reviews: 92% (Very Positive)` &nbsp;**\***       |
-| price           | Price description of game &nbsp;**\***                         |
-| genres          | Genres of game e.g. `FPS, Action, First-Person` &nbsp;**\***   |
-| release         | Release date of game &nbsp;**\***                              |
+| rating          | Reviews e.g. `Reviews: 92% (Very Positive)`                    |
+| price           | Price description of game                                      |
+| genres          | Genres of game e.g. `FPS, Action, First-Person`                |
+| release         | Release date of game                                           |
 | airdate         | Date game was released (Unix timestamp format)                 |
 | normal_price    | Price                                                          |
 | percent_off     | Percentage off of the normal price                             |
@@ -84,12 +84,10 @@ The following state attributes are available for this sensor:
 | sale_price      | Sale price of the game                                         |
 | steam_id        | Steam ID of the game                                           |
 | box_art_url     | URL for the background 16:9 aspect ratio image                 |
-| fanart          | URL for the background 16:9 aspect ratio image &nbsp;**\***    |
-| poster          | URL for the background 3:4 image &nbsp;**\***                  |
-| deep_link       | Clickable hyperlink to game on Steam website &nbsp;**\***      |
+| fanart          | URL for the background 16:9 aspect ratio image                 |
+| poster          | URL for the background 3:4 image                               |
+| deep_link       | Clickable hyperlink to game on Steam website                   |
 
-
-• _Attributes marked with **\*** are for **upcoming_media_card** only._
 
 
 ## Displaying in Lovelace
