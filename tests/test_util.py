@@ -7,7 +7,7 @@ def test_get_steam_game_unreleased_game() -> None:
     game_id = "12007070"
     game = {
         "name": "Deathground",
-        "capsule": "https://cdn.akamai.steamstatic.com/steam/apps/1200770/header_292x136.jpg?t=1680256324",
+        "capsule": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1680256324",
         "review_score": 0,
         "review_desc": "No user reviews",
         "reviews_total": "0",
@@ -31,9 +31,17 @@ def test_get_steam_game_unreleased_game() -> None:
     }
     actual = get_steam_game(game_id, game)
     expected = {
-        "box_art_url": "https://cdn.akamai.steamstatic.com/steam/apps/1200770/header_292x136.jpg?t=1680256324",
+        "airdate": 1684421117,
+        "deep_link": f"https://store.steampowered.com/app/{game_id}",
+        "fanart": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1680256324",
+        "genres": "",
+        "box_art_url": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1680256324",
         "normal_price": None,
         "percent_off": 0,
+        "rating": "Reviews:&nbsp;&nbsp;0% (No user reviews)",
+        "poster": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1680256324",
+        "price": "Price:&nbsp;&nbsp;TBD",
+        "release": "Released:&nbsp;&nbsp;May 18, 2023",
         "review_desc": "No user reviews",
         "reviews_percent": 0,
         "reviews_total": "0",
@@ -49,12 +57,12 @@ def test_get_steam_game_with_sale_price() -> None:
     game_id = "1262350"
     game = {
         "name": "SIGNALIS",
-        "capsule": "https://cdn.akamai.steamstatic.com/steam/apps/1262350/header_292x136.jpg?t=1684085470",
+        "capsule": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
         "review_score": 9,
         "review_desc": "Overwhelmingly Positive",
         "reviews_total": "6,844",
         "reviews_percent": 97,
-        "release_date": "1666879183",
+        "release_date": 1666879183,
         "release_string": "Oct 27, 2022",
         "platform_icons": "",
         "subs": [
@@ -80,9 +88,17 @@ def test_get_steam_game_with_sale_price() -> None:
     }
     actual = get_steam_game(game_id, game)
     expected = {
-        "box_art_url": "https://cdn.akamai.steamstatic.com/steam/apps/1262350/header_292x136.jpg?t=1684085470",
+        "airdate": 1666879183,
+        "deep_link": f"https://store.steampowered.com/app/{game_id}",
+        "fanart": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
+        "genres": "",
+        "box_art_url": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
         "normal_price": 19.99,
         "percent_off": 20,
+        "poster": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
+        "price": "1̶9̶.̶9̶9 $15.99 (20% off)&nbsp;&nbsp;🎫",
+        "rating": "Reviews:&nbsp;&nbsp;97% (Overwhelmingly Positive)",
+        "release": "Released:&nbsp;&nbsp;Oct 27, 2022",
         "review_desc": "Overwhelmingly Positive",
         "reviews_percent": 97,
         "reviews_total": "6,844",
@@ -98,12 +114,12 @@ def test_get_steam_game_with_100_percent_discount() -> None:
     game_id = "1262350"
     game = {
         "name": "SIGNALIS",
-        "capsule": "https://cdn.akamai.steamstatic.com/steam/apps/1262350/header_292x136.jpg?t=1684085470",
+        "capsule": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
         "review_score": 9,
         "review_desc": "Overwhelmingly Positive",
         "reviews_total": "6,844",
         "reviews_percent": 97,
-        "release_date": "1666879183",
+        "release_date": 1666879183,
         "release_string": "Oct 27, 2022",
         "platform_icons": "",
         "subs": [
@@ -129,13 +145,21 @@ def test_get_steam_game_with_100_percent_discount() -> None:
     }
     actual = get_steam_game(game_id, game)
     expected = {
-        "box_art_url": "https://cdn.akamai.steamstatic.com/steam/apps/1262350/header_292x136.jpg?t=1684085470",
+        "airdate": 1666879183,
+        "deep_link": f"https://store.steampowered.com/app/{game_id}",
+        "fanart": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
+        "genres": "",
+        "box_art_url": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
         "normal_price": 0,
         "percent_off": 100,
+        "poster": f"https://cdn.akamai.steamstatic.com/steam/apps/{game_id}/header_292x136.jpg?t=1684085470",
+        "price": "Price:&nbsp;&nbsp;TBD",
+        "rating": "Reviews:&nbsp;&nbsp;97% (Overwhelmingly Positive)",
+        "release": "Released:&nbsp;&nbsp;Oct 27, 2022",
         "review_desc": "Overwhelmingly Positive",
         "reviews_percent": 97,
         "reviews_total": "6,844",
-        "sale_price": 0,
+        "sale_price": 0.0,
         "steam_id": game_id,
         "title": "SIGNALIS",
     }
