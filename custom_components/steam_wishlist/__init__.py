@@ -35,8 +35,15 @@ async def async_setup_entry(
             hass.config_entries.async_forward_entry_setup(entry, component)
         )
 
+    entry.async_on_unload(entry.add_update_listener(update_listener))
+
     return True
 
+
+async def update_listener(hass: core.HomeAssistant, entry: config_entries.ConfigEntry) -> None:
+    show_all = entry.options.get("show_all_wishlist_items", False)
+    hass.data[DOMAIN][entry.entry_id].store_all_wishlist_items = show_all
+    await hass.data[DOMAIN][entry.entry_id].coordinator.async_request_refresh()
 
 async def async_unload_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry

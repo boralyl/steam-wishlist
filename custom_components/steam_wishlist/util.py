@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 from .types import SteamGame
@@ -76,7 +76,7 @@ def get_steam_game(game_id: int, game: Dict, store_all_wishlist_items: bool) -> 
         "review_desc": game.get("review_desc", "No user reviews"),
         "reviews_percent": game.get("reviews_percent", 0),
         "reviews_total": game.get("reviews_total", "0"),
-        "sale_price": str(sale_price) if store_all_wishlist_items else sale_price,
+        "sale_price": sale_price,
         "steam_id": str(game_id),
         "box_art_url": game["capsule"],
         "fanart": game.get("capsule"),
