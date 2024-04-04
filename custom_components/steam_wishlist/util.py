@@ -6,8 +6,18 @@ from .types import SteamGame
 
 _LOGGER = logging.getLogger(__name__)
 
+def get_release_date(game: dict[str, Any]) -> str:
+    release_date = game.get("release_date", "0")
+    if str(release_date).isdigit():
+        release_date_datetime = datetime.fromtimestamp(int(release_date), timezone.utc)
+        if datetime.now(timezone.utc) < release_date_datetime + timedelta(days=1):
+            return "Release date:&nbsp;&nbsp;" + release_date_datetime.strftime("%b %d, %Y") + "&nbsp;&nbsp;🆕"
+        else:
+            return "Released:&nbsp;&nbsp;" + release_date_datetime.strftime("%b %d, %Y")
+    else:
+        return "Unknown"
 
-def get_steam_game(game_id: int, game: Dict, store_all_wishlist_items: bool) -> SteamGame:
+def get_steam_game(game_id: int, game: Dict) -> SteamGame:
     """Get a SteamGame from a game dict."""
     pricing: Optional[Dict[str, Any]] = None
     try:
@@ -51,25 +61,12 @@ def get_steam_game(game_id: int, game: Dict, store_all_wishlist_items: bool) -> 
     except (ValueError, TypeError):
         price_info = "Price information unavailable"
 
-    def get_release_date(game):
-        release_date = game.get("release_date", "0")
-        if str(release_date).isdigit():
-            release_date_datetime = datetime.fromtimestamp(int(release_date), timezone.utc)
-            if datetime.now(timezone.utc) < release_date_datetime + timedelta(days=1):
-                return "Release date:&nbsp;&nbsp;" + release_date_datetime.strftime("%b %d, %Y") + "&nbsp;&nbsp;🆕"
-            else:
-                return "Released:&nbsp;&nbsp;" + release_date_datetime.strftime("%b %d, %Y")
-        else:
-            return "Unknown"
-
-    release_date = get_release_date(game)
-
     game: SteamGame = {
         "title": game["name"],
         "rating": rating_info,
         "price": price_info,
         "genres": ", ".join(game.get("tags", [])),
-        "release": release_date,
+        "release": get_release_date(game),
         "airdate": game.get("release_date", ""),
         "normal_price": str(normal_price),
         "percent_off": str(discount_pct),

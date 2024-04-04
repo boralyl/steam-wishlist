@@ -168,8 +168,8 @@ class SensorManager:
                     continue
 
                 # Found a new game that we will need to create a new binary_sensor for.
-                steam_game = get_steam_game(game_id, game, self.store_all_wishlist_items)
-                self.current_wishlist[game_id] = SteamGameEntity(self, steam_game, self.store_all_wishlist_items)
+                steam_game = get_steam_game(game_id, game)
+                self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
                 new_binary_sensors.append(self.current_wishlist[game_id])
 
         if new_sensors:
