@@ -88,7 +88,6 @@ class SteamWishlistEntity(CoordinatorEntity):
             'icon': 'mdi:arrow-down-bold',
         }
         if self.manager.store_all_wishlist_items:
-            
             games = self.games
         else:
             games = [game for game in self.games if game["sale_price"] is not None]
