@@ -15,5 +15,15 @@
         "title": "Oppsett"
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alternativer",
+        "data": {
+          "show_all_wishlist_items": "Vis også ønskeliste elementer som ikke er på salg i Upcoming Media Card"
+        }
+      }
+    }
   }
 }

@@ -33,7 +33,17 @@ class SteamWishlistEntity(CoordinatorEntity):
 
     @property
     def on_sale(self):
-        return [game for game in self.games if game["sale_price"]]
+        return [game for game in self.games if self._is_price_valid(game["sale_price"])]
+
+    def _is_price_valid(self, price):
+        # Ensures compatibility with 'sale_price' being dynamically typed as string or numeric
+        # to accommodate boolean 'show_all_wishlist_items' option
+        if not price:
+            return False
+        try:
+            return float(price) > 0
+        except ValueError:
+            return False
 
     @property
     def games(self) -> List[SteamGame]:
@@ -68,7 +78,21 @@ class SteamWishlistEntity(CoordinatorEntity):
 
     @property
     def extra_state_attributes(self):
-        return {"on_sale": self.on_sale}
+        # Added Upcoming Media Card compatibility
+        placeholders = {
+            'title_default': '$title',
+            'line1_default': '$rating',
+            'line2_default': '$price',
+            'line3_default': '$release',
+            'line4_default': '$genres',
+            'icon': 'mdi:arrow-down-bold',
+        }
+        if self.manager.store_all_wishlist_items:
+            games = self.games
+        else:
+            games = [game for game in self.games if game["sale_price"] is not None]
+        data_list = [placeholders] + games
+        return {"data": data_list, "on_sale": self.on_sale}
 
     @property
     def device_info(self):
@@ -80,11 +104,7 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
 
     entity_id = None
 
-    def __init__(
-        self,
-        manager,
-        game: SteamGame,
-    ):
+    def __init__(self, manager, game: SteamGame):
         super().__init__(coordinator=manager.coordinator)
         self.game = game
         self.manager = manager
