@@ -3,9 +3,9 @@ from typing import Any, Callable, Dict, List, Union
 
 from homeassistant import core
 from homeassistant.core import callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.entity_registry import async_get
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, SCAN_INTERVAL
@@ -99,7 +99,7 @@ async def async_remove_games(
             # Need to remove entity
             removed_entities.append(game_id)
             await entity.async_remove()
-            ent_registry = await async_get(coordinator.hass)
+            ent_registry = er.async_get(coordinator.hass)
             if entity.entity_id in ent_registry.entities:
                 ent_registry.async_remove(entity.entity_id)
 
@@ -113,7 +113,9 @@ class SensorManager:
     NOTE: This is intended to be a singleton.
     """
 
-    def __init__(self, hass: core.HomeAssistant, store_all_wishlist_items: bool, url: str) -> None:
+    def __init__(
+        self, hass: core.HomeAssistant, store_all_wishlist_items: bool, url: str
+    ) -> None:
         self.hass = hass
         self.store_all_wishlist_items = store_all_wishlist_items
         self.url = url

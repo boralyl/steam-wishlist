@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify
@@ -27,6 +26,8 @@ class SteamWishlistEntity(CoordinatorEntity):
         self.manager = manager
         self._attrs = {}
 
+        self._attr_device_info = manager.coordinator.device_info
+
     @property
     def unique_id(self) -> str:
         return f"steam_wishlist_{self.coordinator.steam_id}"
@@ -46,9 +47,9 @@ class SteamWishlistEntity(CoordinatorEntity):
             return False
 
     @property
-    def games(self) -> List[SteamGame]:
+    def games(self) -> list[SteamGame]:
         """Return all games on the Steam wishlist."""
-        games: List[SteamGame] = []
+        games: list[SteamGame] = []
         for game_id, game in self.coordinator.data.items():
             # This indicates an empty wishlist, just return an empty list.
             if game_id == "success":
@@ -80,23 +81,19 @@ class SteamWishlistEntity(CoordinatorEntity):
     def extra_state_attributes(self):
         # Added Upcoming Media Card compatibility
         placeholders = {
-            'title_default': '$title',
-            'line1_default': '$rating',
-            'line2_default': '$price',
-            'line3_default': '$release',
-            'line4_default': '$genres',
-            'icon': 'mdi:arrow-down-bold',
+            "title_default": "$title",
+            "line1_default": "$rating",
+            "line2_default": "$price",
+            "line3_default": "$release",
+            "line4_default": "$genres",
+            "icon": "mdi:arrow-down-bold",
         }
         if self.manager.store_all_wishlist_items:
             games = self.games
         else:
             games = [game for game in self.games if game["sale_price"] is not None]
-        data_list = [placeholders] + games
+        data_list = [placeholders, *games]
         return {"data": data_list, "on_sale": self.on_sale}
-
-    @property
-    def device_info(self):
-        return self.coordinator.device_info
 
 
 class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
@@ -109,11 +106,11 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
         self.game = game
         self.manager = manager
         self.slug = slugify(self.game["title"])
-        self.entity_id = f"binary_sensor.{self.unique_id}"
 
-    @property
-    def unique_id(self) -> str:
-        return f"steam_wishlist_{self.slug}"
+        self._attr_unique_id = f"steam_wishlist_{self.slug}"
+        self._attr_device_info = manager.coordinator.device_info
+
+        self.entity_id = f"binary_sensor.{self._attr_unique_id}"
 
     @property
     def is_on(self):
@@ -143,11 +140,6 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
     def name(self) -> str:
         """Return the name of the sensor."""
         return self.game["title"]
-
-    @property
-    def unit_of_measurement(self) -> str:
-        """Return the unit of measurement of this entity, if any."""
-        return "on sale"
 
     @property
     def icon(self) -> str:
