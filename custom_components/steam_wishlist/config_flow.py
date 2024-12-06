@@ -1,53 +1,44 @@
+"""Config Flow."""
+
 import logging
-import re
 
 import aiohttp
 import voluptuous as vol
 
-from homeassistant import config_entries, core
+from homeassistant import config_entries
 from homeassistant.core import callback
 
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-PROFILE_ID_URL = "https://store.steampowered.com/wishlist/profiles/{steam_profile_id}/"
-WISHLIST_URL = "https://store.steampowered.com/wishlist/id/{username}/"
-WISHLIST_JSON_URL = (
-    "https://store.steampowered.com/wishlist/profiles/{user_id}/wishlistdata/"
-)
-
-ONE_PROFILE_ERROR_MSG = "Enter either a steam account name or a steam profile id."
+PROFILE_ID_URL = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/"
 DATA_SCHEMA = vol.Schema(
-    {vol.Optional("steam_account_name"): str, vol.Optional("steam_profile_id"): str}
+    {vol.Required("steam_account_name"): str, vol.Required("steam_web_api_key"): str}
 )
 
 
-async def async_get_user_url(steam_account_name: str):
-    """Get URL for a user's wishlist.
-
-    :raises ValueError: If the steam account name appears to be invalid.
-    """
-    url = WISHLIST_URL.format(username=steam_account_name)
-    async with aiohttp.ClientSession() as session:
-        async with (session.get(url)) as resp:
-            html = await resp.text()
-            matches = re.findall(r"wishlist\\\/profiles\\\/([0-9]+)", html)
-            if not matches:
-                _LOGGER.error(
-                    "Error setting up steam-wishlist component.  Did not find user id."
-                )
-                raise ValueError
-            user_id = matches[0]
-            return WISHLIST_JSON_URL.format(user_id=user_id)
+class InvalidAPIKey(Exception):
+    """Exception raised when api key is invalid."""
 
 
-async def async_check_profile_id_valid(steam_profile_id: str) -> bool:
-    url = PROFILE_ID_URL.format(steam_profile_id=steam_profile_id)
-    async with aiohttp.ClientSession() as session:
-        async with (session.get(url)) as resp:
-            if resp.status > 200:
-                return False
-    return True
+class InvalidProfileName(Exception):
+    """Exception raised when profile name is invalid."""
+
+
+async def async_get_steam_id(api_key: str, account_name: str) -> str:
+    """Retrieve the steam id associated with the account name."""
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(
+            PROFILE_ID_URL, params={"key": api_key, "vanityurl": account_name}
+        ) as resp,
+    ):
+        if resp.status == 403:
+            raise InvalidAPIKey
+        data = await resp.json()
+        if data["response"]["success"] != 1:
+            raise InvalidProfileName
+        return data["response"]["steamid"]
 
 
 class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -57,39 +48,30 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user interface."""
         errors = {}
         if user_input is not None:
-            if not user_input.get("steam_account_name") and not user_input.get(
-                "steam_profile_id"
-            ):
-                errors["base"] = "missing"
-            if user_input.get("steam_account_name"):
-                # Validate the account name is valid.
-                try:
-                    user_url = await async_get_user_url(
-                        user_input["steam_account_name"]
-                    )
-                except ValueError:
-                    errors["base"] = "invalid_user"
-            elif user_input.get("steam_profile_id"):
-                # Validate the profile id is valid.
-                if await async_check_profile_id_valid(user_input["steam_profile_id"]):
-                    user_url = WISHLIST_JSON_URL.format(
-                        user_id=user_input["steam_profile_id"]
-                    )
-                else:
-                    errors["base"] = "invalid_profile_id"
+            account_name = user_input["steam_account_name"]
+            api_key = user_input["steam_web_api_key"]
+            try:
+                steam_id = await async_get_steam_id(api_key, account_name)
+            except InvalidProfileName:
+                errors["base"] = "invalid_account_name"
+            except InvalidAPIKey:
+                errors["base"] = "invalid_api_key"
 
             if not errors:
                 return self.async_create_entry(
-                    title="Steam Wishlist", data={"url": user_url}
+                    title="Steam Wishlist", data={"steam_id": steam_id, "key": api_key}
                 )
 
         return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA, errors=errors,
+            step_id="user",
+            data_schema=DATA_SCHEMA,
+            errors=errors,
         )
 
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
+        """Return the options flow."""
         return OptionsFlowHandler(config_entry)
 
 
@@ -102,7 +84,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema({
-                vol.Required("show_all_wishlist_items", default=self.config_entry.options.get("show_all_wishlist_items", False)): bool
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        "show_all_wishlist_items",
+                        default=self.config_entry.options.get(
+                            "show_all_wishlist_items", False
+                        ),
+                    ): bool
+                }
+            ),
         )

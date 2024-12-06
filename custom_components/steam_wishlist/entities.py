@@ -34,7 +34,7 @@ class SteamWishlistEntity(CoordinatorEntity):
 
     @property
     def on_sale(self):
-        return [game for game in self.games if self._is_price_valid(game["sale_price"])]
+        return [game for game in self.games if game["percent_off"] > 0]
 
     def _is_price_valid(self, price):
         # Ensures compatibility with 'sale_price' being dynamically typed as string or numeric
@@ -115,26 +115,7 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
     @property
     def is_on(self):
         """Return True if the binary sensor is on."""
-        try:
-            pricing = self.coordinator.data[self.game["steam_id"]]
-        except KeyError:
-            # This can happen when a game is removed from your wishlist and the entity
-            # has not yet been removed from HA.
-            _LOGGER.warning(
-                "%s not found in self.coordinator.data keys (%s), assuming False. Data was %s",
-                self.game,
-                list(self.coordinator.data.keys()),
-                self.coordinator.data,
-            )
-            return False
-        try:
-            pricing: dict = self.coordinator.data[self.game["steam_id"]]["subs"][0]
-            discount_pct = pricing["discount_pct"]
-        except IndexError:
-            discount_pct = 0
-        if discount_pct is None:
-            return False
-        return discount_pct > 0
+        return self.game["percent_off"] > 0
 
     @property
     def name(self) -> str:
@@ -153,6 +134,4 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
 
     @property
     def extra_state_attributes(self):
-        return get_steam_game(
-            self.game["steam_id"], self.coordinator.data[self.game["steam_id"]]
-        )
+        return self.game
