@@ -56,10 +56,12 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             app_ids: list[int] = [
                 item["appid"] for item in wishlist_data["response"]["items"]
             ]
-
         input_json = {
             "ids": [{"appid": str(app_id)} for app_id in app_ids],
-            "context": {"language": "english", "country_code": "US"},
+            "context": {
+                "language": self.hass.config.language or "en",
+                "country_code": self.hass.config.country or "US",
+            },
             "data_request": {
                 "include_assets": True,
                 "include_reviews": True,

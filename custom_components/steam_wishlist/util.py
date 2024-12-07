@@ -40,10 +40,14 @@ def get_steam_game(game_id: int, game: dict[str, Any]) -> SteamGame:
     except (ValueError, TypeError):
         price_info = "Price information unavailable"
 
-    image_url_format = game["assets"]["asset_url_format"]
-    capsule = game["assets"]["main_capsule"]
-    image_path = image_url_format.replace("${FILENAME}", capsule)
-    image_url = f"{ASSET_BASE_URL}{image_path}"
+    try:
+        image_url_format = game["assets"]["asset_url_format"]
+        capsule = game["assets"]["main_capsule"]
+        image_path = image_url_format.replace("${FILENAME}", capsule)
+        image_url = f"{ASSET_BASE_URL}{image_path}"
+    except KeyError:
+        image_url = None
+
     game: SteamGame = {
         "title": game["name"],
         "rating": rating_info,
