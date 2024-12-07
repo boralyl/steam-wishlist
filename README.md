@@ -9,16 +9,7 @@ A custom component that keeps track of when games on your Steam wishlist are on
 sale. This component uses the config flow and can easily be configured via the
 Integrations section in the UI.
 
-[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/master/assets/setup.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/setup.png)
-
-## Pre-Installation
-
-Prior to installing this integration you must first ensure that your wishlist is publicly
-viewable. To do this, login to you steam account and edit your profile. Under the
-`Privacy Settings` tab, set `Game Details` to `Public`. Without this step, this integration
-will not be able to parse your wishlist.
-
-[![steam privacy settings](https://github.com/boralyl/steam-wishlist/raw/master/assets/steam-profile.png)](https://github.com/boralyl/steam-wishlist/raw/master/assets/steam-profile.png)
+[![sensor.steam_wishlist](https://github.com/boralyl/steam-wishlist/raw/main/assets/setup.png)](https://github.com/boralyl/steam-wishlist/raw/main/assets/setup.png)
 
 ## HACS Installation
 
@@ -68,38 +59,36 @@ indicate if it is on sale or not.
 
 The following state attributes are available for this sensor:
 
-| attribute       | description                                                    |
-| --------------- | -------------------------------------------------------------- |
-| title           | Title of the game                                              |
-| rating          | Reviews e.g. `Reviews: 92% (Very Positive)`                    |
-| price           | Price description of game                                      |
-| genres          | Genres of game e.g. `FPS, Action, First-Person`                |
-| release         | Release date of game                                           |
-| airdate         | Date game was released (Unix timestamp format)                 |
-| normal_price    | Price                                                          |
-| percent_off     | Percentage off of the normal price                             |
-| review_desc     | Review description                                             |
-| reviews_percent | Percentage of positive reviews                                 |
-| reviews_total   | Total number of reviews                                        |
-| sale_price      | Sale price of the game                                         |
-| steam_id        | Steam ID of the game                                           |
-| box_art_url     | URL for the background 16:9 aspect ratio image                 |
-| fanart          | URL for the background 16:9 aspect ratio image                 |
-| poster          | URL for the background 3:4 image                               |
-| deep_link       | Clickable hyperlink to game on Steam website                   |
-
-
+| attribute       | description                                     |
+| --------------- | ----------------------------------------------- |
+| title           | Title of the game                               |
+| rating          | Reviews e.g. `Reviews: 92% (Very Positive)`     |
+| price           | Price description of game                       |
+| genres          | Genres of game e.g. `FPS, Action, First-Person` |
+| release         | Release date of game                            |
+| airdate         | Date game was released (Unix timestamp format)  |
+| normal_price    | Price                                           |
+| percent_off     | Percentage off of the normal price              |
+| review_desc     | Review description                              |
+| reviews_percent | Percentage of positive reviews                  |
+| reviews_total   | Total number of reviews                         |
+| sale_price      | Sale price of the game                          |
+| steam_id        | Steam ID of the game                            |
+| box_art_url     | URL for the background 16:9 aspect ratio image  |
+| fanart          | URL for the background 16:9 aspect ratio image  |
+| poster          | URL for the background 3:4 image                |
+| deep_link       | Clickable hyperlink to game on Steam website    |
 
 ## Displaying in Lovelace
 
 You are able to use any Home Assistant card to display a list of your games that are on sale by utilizing the `sensor.steam_wishlist` sensor. Below, are 2 cards that fully support this integration and its sensor attributes:
-
 
 ### I. upcoming-media-card
 
 You can use [upcoming-media-card](https://github.com/custom-cards/upcoming-media-card) to display your Steam wishlist items that are on sale. You can also toggle displaying your non-sale wishlist items via the YAML setting `collapse: price=🎫` _(along with enabling the **Options** integration setting)_ like so:
 
 Example YAML:
+
 ```yaml
 - type: custom:upcoming-media-card
   entity: sensor.steam_wishlist_978793482343112
@@ -111,7 +100,8 @@ Example YAML:
 
 <img src="./assets/collapse_filter.gif" width="430">
 
-##### Enable the Steam Wishlist integration setting below: 
+##### Enable the Steam Wishlist integration setting below:
+
 <img src="./assets/options.png" width="430">
 
 ---
@@ -121,6 +111,7 @@ Example YAML:
 You can use [nintendo-wishlist-card](https://github.com/custom-cards/nintendo-wishlist-card) to display your Steam wishlist items that are on sale. This is possible since I also maintain the [nintendo-wishlist](https://github.com/custom-components/sensor.nintendo_wishlist) integration. You can add this card to Lovelace like so:
 
 Example YAML:
+
 ```yaml
 - type: custom:nintendo-wishlist-card
   entity: sensor.steam_wishlist_978793482343112
