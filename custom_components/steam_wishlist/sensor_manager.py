@@ -1,5 +1,9 @@
+"""Coordinator and sensor manager for the integration."""
+
+from collections.abc import Callable
+import json
 import logging
-from typing import Any, Callable, Dict, List, Union
+from typing import Any
 
 from homeassistant import core
 from homeassistant.core import callback
@@ -15,8 +19,10 @@ from .util import get_steam_game
 _LOGGER = logging.getLogger(__name__)
 WISHLIST_ID = -1
 DEVICE_CONFIGURATION_URL = "https://store.steampowered.com/wishlist/profiles/{}/"
+GET_WISHLIST_URL = "https://api.steampowered.com/IWishlistService/GetWishlist/v1"
+GET_APPS_URL = "https://api.steampowered.com/IStoreBrowseService/GetItems/v1"
 
-SteamEntity = Union[SteamGameEntity, SteamWishlistEntity]
+SteamEntity = SteamGameEntity | SteamWishlistEntity
 
 
 class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
@@ -29,10 +35,9 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
     is scheduled.
     """
 
-    def __init__(self, hass: core.HomeAssistant, url: str) -> None:
-        self.url = url
-        # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
-        self.steam_id = self.url.split("/")[-3]
+    def __init__(self, hass: core.HomeAssistant, api_key: str, steam_id: str) -> None:
+        self.api_key = api_key
+        self.steam_id = steam_id
         self.http_session = async_get_clientsession(hass)
         super().__init__(
             hass,
@@ -42,34 +47,37 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=SCAN_INTERVAL,
         )
 
-    async def _async_fetch_data(self) -> dict[str, dict[str, Any]]:
+    async def _async_fetch_data(self) -> dict[int, dict[str, Any]]:
         """Fetch the data for the coordinator."""
-        data: dict[str, dict[str, Any]] = {}
-        # Attempt to look up to 10 pages of data. There does not appear to be a static
-        # number of results returned, it seems random. There also isn't any indication
-        # in the response that to let us know there are more pages to fetch. An empty
-        # array will be returned if we request a page of results when a user doesn't
-        # have that many.
-        for page in range(10):
-            url = f"{self.url}?p={page}"
-            async with self.http_session.get(url) as resp:
-                result = await resp.json()
-                if not isinstance(result, dict):
-                    # An empty array will be returned if we request a page of results
-                    # when a user doesn't have that many. e.g. requesting page 2 when
-                    # they only have 1 page of results.
-                    break
-                data.update(result)
-                if len(result) <= 50:
-                    # Even though we don't know the number of results per page, it seems
-                    # to be well over 50, likely between 70-100. So don't bother a 2nd
-                    # request if the result is this small.
-                    break
-
-        return data
+        async with self.http_session.get(
+            GET_WISHLIST_URL, params={"key": self.api_key, "steamid": self.steam_id}
+        ) as resp:
+            wishlist_data = await resp.json()
+            app_ids: list[int] = [
+                item["appid"] for item in wishlist_data["response"]["items"]
+            ]
+        input_json = {
+            "ids": [{"appid": str(app_id)} for app_id in app_ids],
+            "context": {
+                "language": self.hass.config.language or "en",
+                "country_code": self.hass.config.country or "US",
+            },
+            "data_request": {
+                "include_assets": True,
+                "include_reviews": True,
+                "include_basic_info": True,
+            },
+        }
+        async with self.http_session.get(
+            GET_APPS_URL,
+            params={"key": self.api_key, "input_json": json.dumps(input_json)},
+        ) as resp:
+            apps_data = await resp.json()
+            return {item["id"]: item for item in apps_data["response"]["store_items"]}
 
     @property
     def device_info(self) -> DeviceInfo:
+        """Return device info for the integration."""
         unique_id = self.config_entry.unique_id
         return DeviceInfo(
             identifiers={(DOMAIN, unique_id)},
@@ -114,12 +122,17 @@ class SensorManager:
     """
 
     def __init__(
-        self, hass: core.HomeAssistant, store_all_wishlist_items: bool, url: str
+        self,
+        hass: core.HomeAssistant,
+        store_all_wishlist_items: bool,
+        api_key: str,
+        steam_id: str,
     ) -> None:
         self.hass = hass
         self.store_all_wishlist_items = store_all_wishlist_items
-        self.url = url
-        self.coordinator = SteamWishlistDataUpdateCoordinator(hass, url)
+        self.steam_id = steam_id
+        self.api_key = api_key
+        self.coordinator = SteamWishlistDataUpdateCoordinator(hass, api_key, steam_id)
         self._component_add_entities = {}
         self.cleanup_jobs = []
         self.current_wishlist: dict[int, SteamEntity] = {}
@@ -153,26 +166,15 @@ class SensorManager:
 
         new_binary_sensors: list[SteamGameEntity] = []
 
-        process_data = True
-        if not isinstance(self.coordinator.data, dict):
-            # This seems to happen when we get an unexpected response.  This typically
-            # means an intermittent request failure. Data is then an empty dict. Should
-            # something different happen here?
-            _LOGGER.warning(
-                "Coordinator data unexpectedly not a dict: %s", self.coordinator.data
-            )
-            process_data = False
-        # {"success": 2} This CAN (but not always) indicate an empty wishlist.
-        if "success" not in self.coordinator.data and process_data:
-            for game_id, game in self.coordinator.data.items():
-                existing = self.current_wishlist.get(game_id)
-                if existing is not None:
-                    continue
+        for game_id, game in self.coordinator.data.items():
+            existing = self.current_wishlist.get(game_id)
+            if existing is not None:
+                continue
 
-                # Found a new game that we will need to create a new binary_sensor for.
-                steam_game = get_steam_game(game_id, game)
-                self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
-                new_binary_sensors.append(self.current_wishlist[game_id])
+            # Found a new game that we will need to create a new binary_sensor for.
+            steam_game = get_steam_game(game_id, game)
+            self.current_wishlist[game_id] = SteamGameEntity(self, steam_game)
+            new_binary_sensors.append(self.current_wishlist[game_id])
 
         if new_sensors:
             self._component_add_entities["sensor"](new_sensors)

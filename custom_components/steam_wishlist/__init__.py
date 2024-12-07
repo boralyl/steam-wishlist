@@ -17,11 +17,12 @@ async def async_setup_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
 ) -> bool:
     """Set up platforms from a ConfigEntry."""
-    url = entry.data["url"]
-    # https://store.steampowered.com/wishlist/profiles/<steam-id>/wishlistdata/
-    steam_id = url.split("/")[-3]
+    steam_id = entry.data["steam_id"]
+    api_key = entry.data["key"]
     store_all_wishlist_items = entry.options.get("show_all_wishlist_items", False)
-    hass.data[DOMAIN][entry.entry_id] = SensorManager(hass, store_all_wishlist_items, url)
+    hass.data[DOMAIN][entry.entry_id] = SensorManager(
+        hass, store_all_wishlist_items, api_key, steam_id
+    )
 
     if not entry.unique_id:
         hass.config_entries.async_update_entry(
@@ -37,10 +38,13 @@ async def async_setup_entry(
     return True
 
 
-async def update_listener(hass: core.HomeAssistant, entry: config_entries.ConfigEntry) -> None:
+async def update_listener(
+    hass: core.HomeAssistant, entry: config_entries.ConfigEntry
+) -> None:
     show_all = entry.options.get("show_all_wishlist_items", False)
     hass.data[DOMAIN][entry.entry_id].store_all_wishlist_items = show_all
     await hass.data[DOMAIN][entry.entry_id].coordinator.async_request_refresh()
+
 
 async def async_unload_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry

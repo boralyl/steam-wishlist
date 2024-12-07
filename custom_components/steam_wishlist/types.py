@@ -1,13 +1,15 @@
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 
 class SteamGame(TypedDict):
+    """Represents a Steam Game."""
+
     box_art_url: str
-    normal_price: Optional[float]
+    normal_price: str | None
     percent_off: float
     reviews_desc: str
     reviews_percent: int
-    reviews_total: str
-    sale_price: Optional[float]
+    reviews_total: int
+    sale_price: str | None
     steam_id: int
     title: str
