@@ -11,9 +11,9 @@ from homeassistant.core import callback
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-PROFILE_ID_URL = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/"
+PROFILE_ID_URL = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/"
 DATA_SCHEMA = vol.Schema(
-    {vol.Required("steam_account_name"): str, vol.Required("steam_web_api_key"): str}
+    {vol.Required("steam_id"): str, vol.Required("steam_web_api_key"): str}
 )
 
 
@@ -21,24 +21,26 @@ class InvalidAPIKey(Exception):
     """Exception raised when api key is invalid."""
 
 
-class InvalidProfileName(Exception):
-    """Exception raised when profile name is invalid."""
+class InvalidSteamID(Exception):
+    """Exception raised when steam id is invalid."""
 
 
-async def async_get_steam_id(api_key: str, account_name: str) -> str:
+async def async_get_steam_id(api_key: str, account_name: str) -> None:
     """Retrieve the steam id associated with the account name."""
     async with (
         aiohttp.ClientSession() as session,
         session.get(
-            PROFILE_ID_URL, params={"key": api_key, "vanityurl": account_name}
+            PROFILE_ID_URL, params={"key": api_key, "steamids": account_name}
         ) as resp,
     ):
         if resp.status == 403:
             raise InvalidAPIKey
         data = await resp.json()
-        if data["response"]["success"] != 1:
-            raise InvalidProfileName
-        return data["response"]["steamid"]
+
+        try:
+            return data["response"]["players"][0]["steamid"]
+        except (IndexError, KeyError) as err:
+            raise InvalidSteamID from err
 
 
 class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -48,12 +50,12 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user interface."""
         errors = {}
         if user_input is not None:
-            account_name = user_input["steam_account_name"]
+            steam_id = user_input["steam_id"]
             api_key = user_input["steam_web_api_key"]
             try:
-                steam_id = await async_get_steam_id(api_key, account_name)
-            except InvalidProfileName:
-                errors["base"] = "invalid_account_name"
+                await async_get_steam_id(api_key, steam_id)
+            except InvalidSteamID:
+                errors["base"] = "invalid_steam_id"
             except InvalidAPIKey:
                 errors["base"] = "invalid_api_key"
 

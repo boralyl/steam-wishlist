@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify
@@ -21,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 class SteamWishlistEntity(CoordinatorEntity):
     """Representation of a Steam wishlist."""
 
-    def __init__(self, manager):
+    def __init__(self, manager) -> None:
         super().__init__(coordinator=manager.coordinator)
         self.manager = manager
         self._attrs = {}
@@ -33,7 +34,8 @@ class SteamWishlistEntity(CoordinatorEntity):
         return f"steam_wishlist_{self.coordinator.steam_id}"
 
     @property
-    def on_sale(self):
+    def on_sale(self) -> list[SteamGame]:
+        """Return all games on sale."""
         return [game for game in self.games if game["percent_off"] > 0]
 
     def _is_price_valid(self, price):
@@ -78,7 +80,7 @@ class SteamWishlistEntity(CoordinatorEntity):
         return len(self.on_sale)
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any]:
         # Added Upcoming Media Card compatibility
         placeholders = {
             "title_default": "$title",
@@ -101,7 +103,7 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
 
     entity_id = None
 
-    def __init__(self, manager, game: SteamGame):
+    def __init__(self, manager, game: SteamGame) -> None:
         super().__init__(coordinator=manager.coordinator)
         self.game = game
         self.manager = manager
