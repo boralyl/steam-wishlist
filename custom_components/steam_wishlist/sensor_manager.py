@@ -1,6 +1,7 @@
 """Coordinator and sensor manager for the integration."""
 
 from collections.abc import Callable
+from itertools import batched
 import json
 import logging
 from typing import Any
@@ -18,6 +19,8 @@ from .util import get_steam_game
 
 _LOGGER = logging.getLogger(__name__)
 WISHLIST_ID = -1
+# The max amount of app ids to request data for in a single network request.
+BATCH_SIZE = 100
 DEVICE_CONFIGURATION_URL = "https://store.steampowered.com/wishlist/profiles/{}/"
 GET_WISHLIST_URL = "https://api.steampowered.com/IWishlistService/GetWishlist/v1"
 GET_APPS_URL = "https://api.steampowered.com/IStoreBrowseService/GetItems/v1"
@@ -56,24 +59,30 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             app_ids: list[int] = [
                 item["appid"] for item in wishlist_data["response"]["items"]
             ]
-        input_json = {
-            "ids": [{"appid": str(app_id)} for app_id in app_ids],
-            "context": {
-                "language": self.hass.config.language or "en",
-                "country_code": self.hass.config.country or "US",
-            },
-            "data_request": {
-                "include_assets": True,
-                "include_reviews": True,
-                "include_basic_info": True,
-            },
-        }
-        async with self.http_session.get(
-            GET_APPS_URL,
-            params={"key": self.api_key, "input_json": json.dumps(input_json)},
-        ) as resp:
-            apps_data = await resp.json()
-            return {item["id"]: item for item in apps_data["response"]["store_items"]}
+
+        data: dict[int, dict[str, Any]] = {}
+        for batch in batched(app_ids, BATCH_SIZE):
+            input_json = {
+                "ids": [{"appid": str(app_id)} for app_id in batch],
+                "context": {
+                    "language": self.hass.config.language or "en",
+                    "country_code": self.hass.config.country or "US",
+                },
+                "data_request": {
+                    "include_assets": True,
+                    "include_reviews": True,
+                    "include_basic_info": True,
+                },
+            }
+            async with self.http_session.get(
+                GET_APPS_URL,
+                params={"key": self.api_key, "input_json": json.dumps(input_json)},
+            ) as resp:
+                apps_data = await resp.json()
+                data.update(
+                    {item["id"]: item for item in apps_data["response"]["store_items"]}
+                )
+        return data
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -128,6 +137,7 @@ class SensorManager:
         api_key: str,
         steam_id: str,
     ) -> None:
+        """Initialize the sensor manager."""
         self.hass = hass
         self.store_all_wishlist_items = store_all_wishlist_items
         self.steam_id = steam_id

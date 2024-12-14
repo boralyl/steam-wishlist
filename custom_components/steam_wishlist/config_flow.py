@@ -7,6 +7,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
 
@@ -25,12 +26,12 @@ class InvalidSteamID(Exception):
     """Exception raised when steam id is invalid."""
 
 
-async def async_get_steam_id(api_key: str, account_name: str) -> None:
-    """Retrieve the steam id associated with the account name."""
+async def async_verify_steam_id(api_key: str, steam_id: str) -> None:
+    """Verify the provided steam id is valid."""
     async with (
         aiohttp.ClientSession() as session,
         session.get(
-            PROFILE_ID_URL, params={"key": api_key, "steamids": account_name}
+            PROFILE_ID_URL, params={"key": api_key, "steamids": steam_id}
         ) as resp,
     ):
         if resp.status == 403:
@@ -53,7 +54,7 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             steam_id = user_input["steam_id"]
             api_key = user_input["steam_web_api_key"]
             try:
-                await async_get_steam_id(api_key, steam_id)
+                await async_verify_steam_id(api_key, steam_id)
             except InvalidSteamID:
                 errors["base"] = "invalid_steam_id"
             except InvalidAPIKey:
@@ -78,10 +79,11 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
-    def __init__(self, config_entry):
+    def __init__(self, config_entry) -> None:
         self.config_entry = config_entry
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input=None) -> FlowResult:
+        """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
         return self.async_show_form(
