@@ -68,10 +68,11 @@ def test_steamwishlistentity_state(manager_mock):
 
 def test_steamgameentity_unique_id_property(manager_mock):
     """Test the unique_id property of the entity."""
+    manager_mock.coordinator.steam_id = "12345"
     game_id = "1220150"
     game = util.get_steam_game(game_id, manager_mock.coordinator.data[game_id])
     entity = SteamGameEntity(manager_mock, game)
-    assert "steam_wishlist_blue_fire" == entity.unique_id
+    assert "steam_wishlist_12345_blue_fire" == entity.unique_id
 
 
 def test_steamgameentity_is_on_property(manager_mock):
