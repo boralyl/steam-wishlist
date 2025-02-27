@@ -109,7 +109,7 @@ class SteamGameEntity(CoordinatorEntity, BinarySensorEntity):
         self.manager = manager
         self.slug = slugify(self.game["title"])
 
-        self._attr_unique_id = f"steam_wishlist_{self.slug}"
+        self._attr_unique_id = f"steam_wishlist_{self.coordinator.steam_id}_{self.slug}"
         self._attr_device_info = manager.coordinator.device_info
 
         self.entity_id = f"binary_sensor.{self._attr_unique_id}"
