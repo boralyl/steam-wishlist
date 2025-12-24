@@ -1,9 +1,9 @@
 """Coordinator and sensor manager for the integration."""
 
-from collections.abc import Callable
-from itertools import batched
 import json
 import logging
+from collections.abc import Callable
+from itertools import batched
 from typing import Any
 
 from homeassistant import core
@@ -57,7 +57,7 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
         ) as resp:
             wishlist_data = await resp.json()
             app_ids: list[int] = [
-                item["appid"] for item in wishlist_data["response"]["items"]
+                item["appid"] for item in wishlist_data["response"].get("items", [])
             ]
 
         data: dict[int, dict[str, Any]] = {}
