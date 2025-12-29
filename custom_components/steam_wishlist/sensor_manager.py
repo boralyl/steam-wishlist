@@ -56,7 +56,6 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             GET_WISHLIST_URL, params={"key": self.api_key, "steamid": self.steam_id}
         ) as resp:
             wishlist_data = await resp.json()
-            wishlist_items = wishlist_data["response"].get("items")
             if (wishlist_items := wishlist_data["response"].get("items")) is None:
                 _LOGGER.warning(
                     "wishlist response had no `items` key: %s", wishlist_data
