@@ -56,9 +56,13 @@ class SteamWishlistDataUpdateCoordinator(DataUpdateCoordinator):
             GET_WISHLIST_URL, params={"key": self.api_key, "steamid": self.steam_id}
         ) as resp:
             wishlist_data = await resp.json()
-            app_ids: list[int] = [
-                item["appid"] for item in wishlist_data["response"].get("items", [])
-            ]
+            if (wishlist_items := wishlist_data["response"].get("items")) is None:
+                _LOGGER.warning(
+                    "wishlist response had no `items` key: %s", wishlist_data
+                )
+                return {}
+
+            app_ids: list[int] = [item["appid"] for item in wishlist_items]
 
         data: dict[int, dict[str, Any]] = {}
         for batch in batched(app_ids, BATCH_SIZE):
