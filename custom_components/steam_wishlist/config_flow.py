@@ -4,7 +4,6 @@ import logging
 
 import aiohttp
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
@@ -69,6 +68,10 @@ class SteamWishlistConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=DATA_SCHEMA,
             errors=errors,
+            description_placeholders={
+                "steamid_lookup_url": "https://steamid.io/",
+                "steam_web_api_key_url": "https://steamcommunity.com/dev/apikey",
+            },
         )
 
     @staticmethod

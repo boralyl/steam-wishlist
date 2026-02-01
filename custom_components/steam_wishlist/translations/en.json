@@ -11,8 +11,8 @@
           "steam_web_api_key": "Steam Web API Key"
         },
         "data_description": {
-          "steam_id": "Your 64-bit SteamID. You can look up your ID here: https://steamid.io/",
-          "steam_web_api_key": "You can create or look up your api key here: https://steamcommunity.com/dev/apikey"
+          "steam_id": "Your 64-bit SteamID. You can look up your ID here: {steamid_lookup_url}",
+          "steam_web_api_key": "You can create or look up your api key here: {steam_web_api_key_url}"
         },
         "title": "Setup"
       }
